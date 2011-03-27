@@ -9,13 +9,17 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.SpritePool;
 import com.maton.tools.stiletto.view.BundleContainer;
-import com.maton.tools.stiletto.view.dnd.DropReceiver;
+import com.maton.tools.stiletto.view.dnd.IDragProvider;
+import com.maton.tools.stiletto.view.dnd.IDropReceiver;
+import com.maton.tools.stiletto.view.dnd.SourceTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TargetTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
 
@@ -37,18 +41,48 @@ public class SpritesTable extends DefaultTable<Sprite> {
 		table = new Table(parent, style);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		
-		new TargetTransferDefault(table, TransferType.IMAGE, new DropReceiver() {
-			@Override
-			public void drop(Object data) {
-				if (data instanceof com.maton.tools.stiletto.model.Image) {
-					com.maton.tools.stiletto.model.Image img = (com.maton.tools.stiletto.model.Image)data;
-					Sprite sprite = pool.newSprite(img.getExportName());
-					sprite.setRendered(false);
-					sprite.addImage(img);
-				}
-			}
-		});
+
+		new SourceTransferDefault(table, TransferType.SPRITE, false,
+				new IDragProvider() {
+					Sprite object;
+
+					@Override
+					public Object drag() {
+						return object;
+					}
+
+					@Override
+					public boolean canDrag() {
+						TableItem[] selections = table.getSelection();
+
+						if (selections == null || selections.length < 1) {
+							object = null;
+							return false;
+						}
+
+						object = (Sprite) selections[0].getData();
+
+						return object != null;
+					}
+				});
+
+		new TargetTransferDefault(table, TransferType.IMAGE,
+				new IDropReceiver() {
+					@Override
+					public void move(Object data, int idx) {
+
+					}
+
+					@Override
+					public void drop(Control source, Object data, int idx) {
+						if (data instanceof com.maton.tools.stiletto.model.Image) {
+							com.maton.tools.stiletto.model.Image img = (com.maton.tools.stiletto.model.Image) data;
+							Sprite sprite = pool.newSprite(img.getExportName());
+							sprite.setRendered(false);
+							sprite.addImage(img);
+						}
+					}
+				});
 
 		return table;
 	}

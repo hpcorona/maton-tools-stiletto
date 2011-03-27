@@ -2,6 +2,7 @@ package com.maton.tools.stiletto.view.editor;
 
 import org.eclipse.swt.custom.CTabFolder;
 
+import com.maton.tools.stiletto.model.Animation;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Sprite;
 
@@ -15,6 +16,10 @@ public class EditorFactory {
 
 		if (obj instanceof Sprite) {
 			editor = new SpriteEditor(parent, (Sprite) obj);
+		}
+		
+		if (obj instanceof Animation) {
+			editor = new AnimationEditor(parent, (Animation) obj);
 		}
 
 		if (editor != null) {

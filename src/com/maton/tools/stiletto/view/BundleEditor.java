@@ -5,11 +5,10 @@ import java.io.File;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ExpandBar;
 
@@ -20,9 +19,10 @@ import com.maton.tools.stiletto.view.outline.ImagesOutline;
 import com.maton.tools.stiletto.view.outline.SpritesOutline;
 
 public class BundleEditor {
-	
-	ImageDescriptor icon = ImageDescriptor.createFromFile(getClass(), "toolbox.png");
-	
+
+	ImageDescriptor icon = ImageDescriptor.createFromFile(getClass(),
+			"toolbox.png");
+
 	protected File file;
 	protected CTabFolder parent;
 	protected CTabItem item;
@@ -35,20 +35,20 @@ public class BundleEditor {
 	protected FontsOutline fonts;
 	protected EditorContainer editors;
 	protected Bundle bundle;
-	
+
 	public BundleEditor(CTabFolder parent, File file) {
 		this.file = file;
 		this.parent = parent;
 
 		bundle = new Bundle(parent.getDisplay(), file);
-		
+
 		item = new CTabItem(parent, SWT.CLOSE);
-		
+
 		build();
-		
+
 		item.setControl(container);
 		item.setImage(icon.createImage());
-		
+
 		if (file == null) {
 			item.setText("untitled");
 			item.setToolTipText("New bundle");
@@ -57,64 +57,73 @@ public class BundleEditor {
 			item.setToolTipText(file.getAbsolutePath());
 		}
 	}
-	
+
 	protected void build() {
 		container = new Composite(parent, SWT.NONE);
-		container.setLayout(new FillLayout());
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginBottom = 0;
+		layout.marginHeight = 0;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+		layout.marginWidth = 0;
+		layout.verticalSpacing = 0;
+		layout.horizontalSpacing = 0;
+		container.setLayout(layout);
 
-		sash = new SashForm(container, SWT.HORIZONTAL | SWT.BORDER);
-		
-		sections = new ExpandBar(sash, SWT.V_SCROLL);
+		GridData gd = null;
+
+		sections = new ExpandBar(container, SWT.V_SCROLL);
 		sections.setSpacing(2);
-		
+
 		images = new ImagesOutline(sections, 0, bundle.getImages());
 		sprites = new SpritesOutline(sections, 1, bundle.getSprites());
-		animations = new AnimationsOutline(sections, 2);
+		animations = new AnimationsOutline(sections, 2, bundle.getAnimations());
 		fonts = new FontsOutline(sections, 3);
-		
-		editors = new EditorContainer(sash);
-		
-		sash.setWeights(new int[] { 400, 500 });
-		
-		editors.getContainer().addCTabFolder2Listener(new CTabFolder2Adapter() {
-			@Override
-			public void maximize(CTabFolderEvent event) {
-				if (sash.getMaximizedControl() == null) {
-					sash.setMaximizedControl(editors.getContainer());
-				} else {
-					sash.setMaximizedControl(null);
-				}
-			}
-		});
+
+		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessVerticalSpace = true;
+		gd.widthHint = 340;
+		sections.setLayoutData(gd);
+
+		editors = new EditorContainer(container);
+
+		gd = new GridData(GridData.VERTICAL_ALIGN_END);
+		gd.horizontalAlignment = SWT.FILL;
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.grabExcessVerticalSpace = true;
+		editors.getContainer().setLayoutData(gd);
 	}
-	
+
 	public CTabItem getItem() {
 		return item;
 	}
-	
+
 	public void refresh() {
 		bundle.refresh();
 	}
-	
+
 	public void save() {
 		editors.save();
 		bundle.save();
 	}
-	
+
 	public void importImages(File[] list) {
 		bundle.imports(list);
 	}
-	
+
 	public void buildBundle() {
 		bundle.build();
 	}
-	
+
 	public Bundle getBundle() {
 		return bundle;
 	}
-	
+
 	public void launchEditor(Object obj) {
 		editors.launchEditor(obj);
 	}
-	
+
 }

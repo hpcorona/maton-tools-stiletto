@@ -1,22 +1,23 @@
 package com.maton.tools.stiletto.view.dnd;
 
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Control;
 
 public class SourceTransferDefault {
 
-	protected Table source;
+	protected Control source;
 	protected Transfer type;
 	protected boolean sameWidget;
 	protected DragSource dragSource;
-	protected DragRequester requester;
+	protected IDragProvider requester;
 
-	public SourceTransferDefault(Table source, Transfer type,
-			boolean sameWidget, DragRequester requester) {
+	public SourceTransferDefault(Control source, Transfer type,
+			boolean sameWidget, IDragProvider requester) {
 		this.source = source;
 		this.type = type;
 		this.sameWidget = sameWidget;
@@ -46,6 +47,8 @@ public class SourceTransferDefault {
 			public void dragSetData(DragSourceEvent event) {
 				if (type.isSupportedType(event.dataType)) {
 					event.data = requester.drag();
+					LocalSelectionTransfer.getTransfer().setSelection(
+							new DragSelection(source, event.data));
 				}
 			}
 

@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.ImagePool;
-import com.maton.tools.stiletto.view.dnd.DragRequester;
+import com.maton.tools.stiletto.view.dnd.IDragProvider;
 import com.maton.tools.stiletto.view.dnd.SourceTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
 
@@ -40,7 +40,7 @@ public class ImagesTable extends DefaultTable<Image> {
 		table.getVerticalBar().setVisible(true);
 		table.setDragDetect(true);
 
-		new SourceTransferDefault(table, TransferType.IMAGE, false, new DragRequester() {
+		new SourceTransferDefault(table, TransferType.IMAGE, false, new IDragProvider() {
 			Image object;
 			
 			@Override

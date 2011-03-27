@@ -37,4 +37,26 @@ public abstract class ModelEventProvider {
 		}
 	}
 	
+	public void notifyInsert(Object obj, int idx) {
+		Iterator<IModelListener> iterator = modelListeners.iterator();
+		while (iterator.hasNext()) {
+			iterator.next().notifyInsert(obj, idx);
+		}
+	}
+	
+	public void notifySwap(int idx0, int idx1, Object obj0, Object obj1) {
+		if (idx1 >= idx0) {
+			notifyDelete(obj1);
+			notifyInsert(obj0, idx1);
+			notifyDelete(obj0);
+			notifyInsert(obj1, idx0);
+		} else {
+			notifySwap(idx1, idx0, obj1, obj0);
+		}
+	}
+	
+	public void notifyMove(int idx1, Object obj) {
+		notifyDelete(obj);
+		notifyInsert(obj, idx1);
+	}
 }

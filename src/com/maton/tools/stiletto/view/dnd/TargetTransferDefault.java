@@ -7,66 +7,82 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 
 public class TargetTransferDefault {
 
 	protected Control target;
-	protected Transfer type;
+	protected Transfer[] types;
 	protected DropTarget dropTarget;
-	protected DropReceiver receiver;
+	protected IDropReceiver receiver;
 
-	public TargetTransferDefault(Control target, Transfer type,
-			DropReceiver receiver) {
+	public TargetTransferDefault(Control target, Transfer[] types,
+			IDropReceiver receiver) {
 		this.target = target;
-		this.type = type;
+		this.types = types;
 		this.receiver = receiver;
 
 		build();
+	}
+
+	public TargetTransferDefault(Control target, Transfer type,
+			IDropReceiver receiver) {
+		this(target, new Transfer[] { type }, receiver);
 	}
 
 	protected void build() {
 		int operations = DND.DROP_DEFAULT | DND.DROP_COPY | DND.DROP_MOVE;
 
 		dropTarget = new DropTarget(target, operations);
-		Transfer[] trans = new Transfer[] { type };
-		dropTarget.setTransfer(trans);
-		
+		dropTarget.setTransfer(types);
+
 		dropTarget.addDropListener(new DropTargetListener() {
 
 			@Override
 			public void dropAccept(DropTargetEvent event) {
-				System.out.println("accept");
 				// Si drag enter acepta, pos ya
 			}
 
 			@Override
 			public void drop(DropTargetEvent event) {
-				System.out.println("drop");
-				receiver.drop(event);
+				int idx = -1;
+				if (event.item instanceof TableItem) {
+					TableItem item = (TableItem) event.item;
+					Table tbl = item.getParent();
+					idx = tbl.indexOf(item);
+				}
+
+				if (event.data instanceof DragSelection) {
+					DragSelection sel = (DragSelection) event.data;
+					
+					if (sel.getSource() == target) {
+						receiver.move(sel.getObject(), idx);
+					} else {
+						receiver.drop(sel.getSource(), sel.getObject(), idx);
+					}
+				} else {
+					receiver.drop(null, event.data, idx);
+				}
 			}
 
 			@Override
 			public void dragOver(DropTargetEvent event) {
-				System.out.println("over");
-				event.feedback = DND.FEEDBACK_SCROLL | DND.FEEDBACK_SELECT;
 				// Nada, no nos interesa
 			}
 
 			@Override
 			public void dragOperationChanged(DropTargetEvent event) {
-				System.out.println("Changed");
 				dragEnter(event); // Revalidamos
 			}
 
 			@Override
 			public void dragLeave(DropTargetEvent event) {
-				System.out.println("leave");
 				// Nada, ya lo hizo todo dragEnter
 			}
 
 			@Override
 			public void dragEnter(DropTargetEvent event) {
-				System.out.println("dragEnter");
 				if (event == null || event.currentDataType == null) {
 					event.detail = DND.DROP_NONE;
 					return;
@@ -74,15 +90,19 @@ public class TargetTransferDefault {
 
 				boolean supported = false;
 
-				TransferData[] types = type.getSupportedTypes();
-				for (TransferData td : types) {
-					if (td.type == event.currentDataType.type) {
-						supported = true;
+				for (Transfer type : types) {
+					TransferData[] types = type.getSupportedTypes();
+					for (TransferData td : types) {
+						if (td.type == event.currentDataType.type) {
+							supported = true;
+							break;
+						}
+					}
+
+					if (supported) {
 						break;
 					}
 				}
-
-				System.out.println(supported);
 
 				if (supported) {
 					event.detail = DND.DROP_COPY;

@@ -12,7 +12,7 @@ public class DefaultTransferType extends Transfer {
 	public DefaultTransferType(String typeName) {
 		this.typeName = typeName;
 
-		type = LocalSelectionTransfer.registerType(typeName + System.currentTimeMillis());
+		type = LocalSelectionTransfer.registerType(typeName);
 	}
 	
 	public int getType() {

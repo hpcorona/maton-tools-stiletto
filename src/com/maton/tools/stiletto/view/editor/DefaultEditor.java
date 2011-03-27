@@ -4,6 +4,7 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -21,21 +22,42 @@ public abstract class DefaultEditor {
 
 	protected CTabFolder parent;
 	protected CTabItem item;
+	protected Composite mainContainer;
 	protected Composite container;
 	protected ToolBarManager toolbar;
+	protected Composite extraContainer;
+	protected ToolBarManager extraToolbar;
 
 	public DefaultEditor(CTabFolder parent) {
 		this.parent = parent;
 		item = new CTabItem(parent, SWT.CLOSE);
 		item.setData(this);
 	}
+	
+	public abstract void dispose();
+	
+	public abstract Object getData();
 
 	protected abstract Control createControl(Composite parent);
 
 	protected abstract ToolBarManager createToolBarManager(Composite parent);
 
-	protected void build() {
-		container = new Composite(parent, SWT.NONE);
+	protected void createMainContainer() {
+		mainContainer = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginBottom = 0;
+		layout.marginHeight = 0;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+		layout.marginWidth = 0;
+		layout.verticalSpacing = 0;
+		layout.horizontalSpacing = 0;
+		mainContainer.setLayout(layout);
+	}
+	
+	protected void createContainer() {
+		container = new Composite(mainContainer, SWT.NONE);
 		GridLayout layout = new GridLayout(1, true);
 		layout.marginBottom = 0;
 		layout.marginHeight = 0;
@@ -67,8 +89,92 @@ public abstract class DefaultEditor {
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;
 		child.setLayoutData(gd);
+	}
+	
+	protected boolean createExtraContainer() {
+		if (hasExtraControl() == false) return false;
+		
+		extraContainer = new Composite(mainContainer, SWT.BORDER);
+		GridLayout layout = new GridLayout(1, true);
+		layout.marginBottom = 0;
+		layout.marginHeight = 0;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+		layout.marginWidth = 0;
+		layout.verticalSpacing = 0;
+		layout.horizontalSpacing = 0;
+		extraContainer.setLayout(layout);
 
-		item.setControl(container);
+		GridData gd = null;
+
+		extraToolbar = createExtraToolBarManager(extraContainer);
+		if (toolbar != null) {
+			gd = new GridData();
+			gd.horizontalAlignment = SWT.FILL;
+			gd.verticalAlignment = SWT.FILL;
+			gd.grabExcessHorizontalSpace = true;
+			gd.minimumHeight = 20;
+			extraToolbar.getControl().setLayoutData(gd);
+			extraToolbar.update(true);
+		}
+
+		Control child = createExtraControl(extraContainer);
+		gd = new GridData();
+		gd.horizontalAlignment = SWT.FILL;
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.grabExcessVerticalSpace = true;
+		child.setLayoutData(gd);
+		
+		return true;
+	}
+	
+	protected boolean hasExtraControl() {
+		return false;
+	}
+	
+	protected ToolBarManager createExtraToolBarManager(Composite parent) {
+		return null;
+	}
+	
+	protected Control createExtraControl(Composite parent) {
+		return null;
+	}
+	
+	protected void build() {
+		createMainContainer();
+		
+		createContainer();
+
+		GridData gd = null;
+		
+		if (createExtraContainer()) {
+			gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
+			gd.horizontalAlignment = SWT.FILL;
+			gd.verticalAlignment = SWT.FILL;
+			gd.grabExcessHorizontalSpace = true;
+			gd.grabExcessVerticalSpace = true;
+			container.setLayoutData(gd);
+			
+			gd = new GridData(GridData.VERTICAL_ALIGN_END);
+			gd.horizontalAlignment = SWT.FILL;
+			gd.verticalAlignment = SWT.FILL;
+			gd.grabExcessHorizontalSpace = false;
+			gd.grabExcessVerticalSpace = true;
+			gd.widthHint = 220;
+			extraContainer.setLayoutData(gd);
+		} else {
+			gd = new GridData();
+			gd.horizontalAlignment = SWT.FILL;
+			gd.verticalAlignment = SWT.FILL;
+			gd.grabExcessVerticalSpace = true;
+			gd.grabExcessHorizontalSpace = true;
+			gd.horizontalSpan = 2;
+			container.setLayoutData(gd);
+		}
+
+		item.setControl(mainContainer);
 	}
 
 	public abstract void save();
@@ -126,6 +232,23 @@ public abstract class DefaultEditor {
 	
 	protected void drawGuide(GC gc, int x, int y) {
 		gc.drawImage(GUIDE, -150 + x, -150 + y);
+	}
+	
+	static Color COLOR_SEL_BACKGROUND = new Color(Display.getCurrent(), 50, 50, 140);
+	static Color COLOR_SEL_FOREGROUND = new Color(Display.getCurrent(), 20, 20, 100);
+	
+	protected void drawSelection(GC gc, int x, int y, com.maton.tools.stiletto.model.Image img) {
+		int w = img.getWidth();
+		int h = img.getHeight();
+		gc.setAlpha(100);
+		
+		gc.setBackground(COLOR_SEL_BACKGROUND);
+		gc.fillRectangle(x, y, w, h);
+
+		gc.setAlpha(255);
+
+		gc.setForeground(COLOR_SEL_FOREGROUND);
+		gc.drawRectangle(x, y, w, h);
 	}
 	
 	public CTabItem getItem() {

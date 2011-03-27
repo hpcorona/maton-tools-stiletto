@@ -110,5 +110,5 @@ public class Image implements Drawable {
 	public void setExportName(String exportName) {
 		this.exportName = exportName;
 	}
-	
+
 }

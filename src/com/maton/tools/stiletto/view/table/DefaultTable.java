@@ -184,5 +184,13 @@ public abstract class DefaultTable<T> extends LabelProvider implements
 	public void notifyDelete(Object obj) {
 		viewer.remove(obj);
 	}
+	
+	public void notifyInsert(Object obj, int idx) {
+		viewer.insert(obj, idx);
+	}
+	
+	public TableViewer getViewer() {
+		return viewer;
+	}
 
 }

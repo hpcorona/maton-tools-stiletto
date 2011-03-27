@@ -60,7 +60,7 @@ public class Positioned<T extends Drawable> implements Drawable {
 
 	@Override
 	public void draw(GC g, int x, int y, float rotation, int alpha) {
-		source.draw(g, this.x, this.y, this.rotation, this.alpha);
+		source.draw(g, this.x + x, this.y + y, this.rotation, this.alpha);
 	}
 	
 }
