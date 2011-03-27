@@ -6,26 +6,24 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 
+import com.maton.tools.stiletto.model.Actor;
+import com.maton.tools.stiletto.model.ActorPool;
 import com.maton.tools.stiletto.model.Animation;
-import com.maton.tools.stiletto.model.AnimationPool;
-import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.view.BundleContainer;
-import com.maton.tools.stiletto.view.dnd.IDragProvider;
 import com.maton.tools.stiletto.view.dnd.IDropReceiver;
-import com.maton.tools.stiletto.view.dnd.SourceTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TargetTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
 
-public class AnimationsTable extends DefaultTable<Animation> {
+public class ActorsTable extends DefaultTable<Actor> {
 
-	protected AnimationPool pool;
+	protected ActorPool pool;
 
-	public AnimationsTable(Composite parent, int style, AnimationPool pool) {
+	public ActorsTable(Composite parent, int style, ActorPool pool) {
 		super(parent, style);
 
 		this.pool = pool;
@@ -39,32 +37,8 @@ public class AnimationsTable extends DefaultTable<Animation> {
 		table = new Table(parent, style);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		
-		new SourceTransferDefault(table, TransferType.ANIMATION, false,
-				new IDragProvider() {
-					Animation object;
 
-					@Override
-					public Object drag() {
-						return object;
-					}
-
-					@Override
-					public boolean canDrag() {
-						TableItem[] selections = table.getSelection();
-
-						if (selections == null || selections.length < 1) {
-							object = null;
-							return false;
-						}
-
-						object = (Animation) selections[0].getData();
-
-						return object != null;
-					}
-				});
-
-		new TargetTransferDefault(table, TransferType.SPRITE,
+		new TargetTransferDefault(table, TransferType.ANIMATION,
 				new IDropReceiver() {
 					@Override
 					public void move(Object data, int idx) {
@@ -73,11 +47,10 @@ public class AnimationsTable extends DefaultTable<Animation> {
 
 					@Override
 					public void drop(Control source, Object data, int idx) {
-						if (data instanceof Sprite) {
-							Sprite sprite = (Sprite) data;
-							Animation animation = pool.newElement(sprite
-									.getName());
-							animation.addChild(sprite);
+						if (data instanceof Animation) {
+							Animation anim = (Animation) data;
+							Actor actor = pool.newElement(anim.getName());
+							actor.addChild(anim);
 						}
 					}
 				});
@@ -96,7 +69,7 @@ public class AnimationsTable extends DefaultTable<Animation> {
 	}
 
 	@Override
-	protected DefaultColumn<Animation>[] getColumns() {
+	protected DefaultColumn<Actor>[] getColumns() {
 		return new BaseColumn[] { new NameColumn(table) };
 	}
 
@@ -107,14 +80,14 @@ public class AnimationsTable extends DefaultTable<Animation> {
 		BundleContainer.getInstance().getCurrent().launchEditor(obj);
 	}
 
-	static org.eclipse.swt.graphics.Image ANIMATION;
+	static Image ACTOR;
 
 	static {
-		ANIMATION = ImageDescriptor.createFromFile(AnimationsTable.class,
-				"game-monitor.png").createImage();
+		ACTOR = ImageDescriptor.createFromFile(ActorsTable.class, "dummy.png")
+				.createImage();
 	}
 
-	abstract class BaseColumn extends DefaultColumn<Animation> {
+	abstract class BaseColumn extends DefaultColumn<Actor> {
 		public BaseColumn(String property, String title, int width, int style,
 				boolean editable, CellEditor editor) {
 			super(property, title, width, style, editable, editor);
@@ -127,11 +100,10 @@ public class AnimationsTable extends DefaultTable<Animation> {
 			super("name", "Name", 300, SWT.LEFT, true, new TextCellEditor(
 					parent));
 
-			sorter = new DefaultSorter<Animation>() {
+			sorter = new DefaultSorter<Actor>() {
 
 				@Override
-				public int compareElements(Viewer viewer, Animation t1,
-						Animation t2) {
+				public int compareElements(Viewer viewer, Actor t1, Actor t2) {
 					return t1.getName().compareTo(t2.getName());
 				}
 
@@ -139,23 +111,23 @@ public class AnimationsTable extends DefaultTable<Animation> {
 		}
 
 		@Override
-		public Object getValue(Animation element) {
+		public Object getValue(Actor element) {
 			return element.getName();
 		}
 
 		@Override
-		public String getText(Animation element) {
+		public String getText(Actor element) {
 			return element.getName();
 		}
 
 		@Override
-		public void modify(Animation element, Object value) {
+		public void modify(Actor element, Object value) {
 			element.setName((String) value);
 		}
 
 		@Override
-		public org.eclipse.swt.graphics.Image getImage(Animation element) {
-			return ANIMATION;
+		public org.eclipse.swt.graphics.Image getImage(Actor element) {
+			return ACTOR;
 		}
 
 	}

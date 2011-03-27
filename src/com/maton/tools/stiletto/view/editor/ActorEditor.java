@@ -15,34 +15,35 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import com.maton.tools.stiletto.model.Action;
+import com.maton.tools.stiletto.model.Actor;
 import com.maton.tools.stiletto.model.Animation;
 import com.maton.tools.stiletto.model.Frame;
-import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.base.IModelListener;
 import com.maton.tools.stiletto.view.BundleContainer;
 import com.maton.tools.stiletto.view.dnd.IDropReceiver;
 import com.maton.tools.stiletto.view.dnd.TargetTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
-import com.maton.tools.stiletto.view.editor.action.AddEmptyAction;
 import com.maton.tools.stiletto.view.editor.action.DelayStartAction;
-import com.maton.tools.stiletto.view.editor.action.DeleteFrameAction;
+import com.maton.tools.stiletto.view.editor.action.DeleteActionAction;
 import com.maton.tools.stiletto.view.editor.action.LoopAction;
 import com.maton.tools.stiletto.view.editor.action.PlayAction;
 import com.maton.tools.stiletto.view.editor.action.ShowGridAction;
 import com.maton.tools.stiletto.view.editor.action.ShowGuideAction;
-import com.maton.tools.stiletto.view.outline.AnimationsOutline;
+import com.maton.tools.stiletto.view.outline.ActorsOutline;
+import com.maton.tools.stiletto.view.table.ActionTable;
 import com.maton.tools.stiletto.view.table.DefaultTable;
-import com.maton.tools.stiletto.view.table.FrameTable;
 
-public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
+public class ActorEditor extends DefaultEditor implements IGraphicsEditor,
 		IModelListener, MouseListener, MouseMoveListener, IBaseEditor,
 		IAnimationPreviewer {
 
 	static ImageDescriptor icon = ImageDescriptor.createFromFile(
-			AnimationsOutline.class, "game-monitor.png");
+			ActorsOutline.class, "dummy.png");
 
 	public static final int TIME_INC = 5;
 
+	protected Actor actor;
 	protected Animation animation;
 	protected Canvas canvas;
 	protected boolean showGuide = true;
@@ -51,7 +52,7 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 	protected boolean delayStart = false;
 	protected boolean loop = true;
 	protected int xOffset, yOffset;
-	protected FrameTable table;
+	protected ActionTable table;
 	protected MouseTracker tracker;
 	protected Runnable updater;
 	protected boolean disposeAll = false;
@@ -61,15 +62,15 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 	protected LoopAction loopAction;
 	protected DelayStartAction delayAction;
 
-	public AnimationEditor(CTabFolder parent, Animation animation) {
+	public ActorEditor(CTabFolder parent, Actor actor) {
 		super(parent);
-		this.animation = animation;
-		item.setText(animation.getName());
+		this.actor = actor;
+		item.setText(actor.getName());
 		item.setImage(icon.createImage());
 		xOffset = 100;
 		yOffset = 200;
 
-		animation.addModelListener(this);
+		actor.addModelListener(this);
 
 		build();
 
@@ -96,11 +97,11 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 	public void dispose() {
 		disposeAll = true;
 		Display.getCurrent().timerExec(-1, updater);
-		animation.removeModelListener(this);
+		actor.removeModelListener(this);
 	}
 
 	public Object getData() {
-		return animation;
+		return actor;
 	}
 
 	@Override
@@ -118,7 +119,7 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 		canvas.addMouseListener(this);
 		tracker = new MouseTracker(this);
 
-		new TargetTransferDefault(canvas, TransferType.SPRITE,
+		new TargetTransferDefault(canvas, TransferType.ANIMATION,
 				new IDropReceiver() {
 
 					@Override
@@ -127,10 +128,10 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 
 					@Override
 					public void drop(Control source, Object data, int idx) {
-						if (data instanceof Sprite) {
-							Frame frame = animation.addChild((Sprite) data);
+						if (data instanceof Animation) {
+							Action action = actor.addChild((Animation) data);
 							table.getViewer().getTable()
-									.setSelection(animation.indexOf(frame));
+									.setSelection(actor.indexOf(action));
 
 							refreshGraphics();
 						}
@@ -161,19 +162,25 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	protected Control createExtraControl(Composite parent) {
-		table = new FrameTable(parent, DefaultTable.DEFAULT_TABLE_STYLE,
-				animation);
+		table = new ActionTable(parent, DefaultTable.DEFAULT_TABLE_STYLE,
+				actor);
 
-		extraToolbar.add(new DeleteFrameAction(table, animation));
-		extraToolbar.add(new Separator());
-		extraToolbar.add(new AddEmptyAction(animation));
+		extraToolbar.add(new DeleteActionAction(table, actor));
 		extraToolbar.update(true);
 
 		table.getTable().addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				if (!play) {
-					current = table.getSelected();
+				Action action = table.getSelected();
+				
+				current = null;
+				currentTime = 0;
+				prevIdx = -1;
+				if (action != null) {
+					animation = action.getSource();
+					refreshGraphics();
+				} else {
+					animation = null;
 					refreshGraphics();
 				}
 			}
@@ -191,14 +198,14 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				Frame frame = table.getSelected();
+				Action action = table.getSelected();
 
-				if (frame == null) {
+				if (action == null) {
 					return;
 				}
 
 				BundleContainer.getInstance().getCurrent()
-						.launchEditor(frame.getSource());
+						.launchEditor(action.getSource());
 			}
 		});
 
@@ -290,7 +297,6 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	public void mouseDown(MouseEvent e) {
-		current = table.getSelected();
 		tracker.mouseDown(e.x, e.y);
 	}
 
@@ -352,6 +358,13 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 	}
 
 	public int updateAnimation() {
+		if (animation == null) {
+			prevIdx = -1;
+			current = null;
+			currentTime = 0;
+			
+			return TIME_INC;
+		}
 		int newIdx = animation.getFrameForTime(currentTime);
 
 		currentTime += TIME_INC;

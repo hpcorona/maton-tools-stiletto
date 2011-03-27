@@ -12,6 +12,7 @@ public class Bundle {
 	protected ImagePool images;
 	protected SpritePool sprites;
 	protected AnimationPool animations;
+	protected ActorPool actors;
 	protected BundleContext ctx;
 
 	public Bundle(Device device, File file) {
@@ -23,6 +24,7 @@ public class Bundle {
 		images = new ImagePool(ctx);
 		sprites = new SpritePool(ctx);
 		animations = new AnimationPool(ctx);
+		actors = new ActorPool(ctx);
 		
 		if (file.exists()) {
 			load();
@@ -42,6 +44,10 @@ public class Bundle {
 
 	public AnimationPool getAnimations() {
 		return animations;
+	}
+	
+	public ActorPool getActors() {
+		return actors;
 	}
 
 	public void refresh() {
@@ -71,6 +77,7 @@ public class Bundle {
 	}
 
 	public void clear() {
+		actors.clear();
 		animations.clear();
 		sprites.clear();
 		images.clear();

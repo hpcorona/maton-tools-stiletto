@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ExpandBar;
 
 import com.maton.tools.stiletto.model.Bundle;
+import com.maton.tools.stiletto.view.outline.ActorsOutline;
 import com.maton.tools.stiletto.view.outline.AnimationsOutline;
 import com.maton.tools.stiletto.view.outline.FontsOutline;
 import com.maton.tools.stiletto.view.outline.ImagesOutline;
@@ -32,6 +33,7 @@ public class BundleEditor {
 	protected ImagesOutline images;
 	protected SpritesOutline sprites;
 	protected AnimationsOutline animations;
+	protected ActorsOutline actors;
 	protected FontsOutline fonts;
 	protected EditorContainer editors;
 	protected Bundle bundle;
@@ -79,7 +81,8 @@ public class BundleEditor {
 		images = new ImagesOutline(sections, 0, bundle.getImages());
 		sprites = new SpritesOutline(sections, 1, bundle.getSprites());
 		animations = new AnimationsOutline(sections, 2, bundle.getAnimations());
-		fonts = new FontsOutline(sections, 3);
+		actors = new ActorsOutline(sections, 3, bundle.getActors());
+		fonts = new FontsOutline(sections, 4);
 
 		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gd.verticalAlignment = SWT.FILL;

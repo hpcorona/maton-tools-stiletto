@@ -10,24 +10,24 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.maton.tools.stiletto.model.AnimationPool;
+import com.maton.tools.stiletto.model.ActorPool;
 import com.maton.tools.stiletto.view.BundleContainer;
-import com.maton.tools.stiletto.view.action.NewAnimationAction;
-import com.maton.tools.stiletto.view.table.AnimationsTable;
+import com.maton.tools.stiletto.view.action.NewActorAction;
+import com.maton.tools.stiletto.view.table.ActorsTable;
 import com.maton.tools.stiletto.view.table.DefaultTable;
 
-public class AnimationsOutline extends DefaultOutline {
+public class ActorsOutline extends DefaultOutline {
 
 	static ImageDescriptor icon = ImageDescriptor.createFromFile(
-			AnimationsOutline.class, "game-monitor.png");
+			ActorsOutline.class, "dummy.png");
 
-	protected AnimationsTable table;
-	protected AnimationPool pool;
+	protected ActorsTable table;
+	protected ActorPool pool;
 
-	public AnimationsOutline(ExpandBar parent, int idx, AnimationPool pool) {
+	public ActorsOutline(ExpandBar parent, int idx, ActorPool pool) {
 		super(parent, idx);
 		this.pool = pool;
-		item.setText("Animations");
+		item.setText("Actors");
 		item.setExpanded(true);
 		item.setImage(icon.createImage());
 		item.setHeight(150);
@@ -37,8 +37,7 @@ public class AnimationsOutline extends DefaultOutline {
 
 	@Override
 	protected Control createControl(Composite parent) {
-		table = new AnimationsTable(parent, DefaultTable.DEFAULT_TABLE_STYLE,
-				pool);
+		table = new ActorsTable(parent, DefaultTable.DEFAULT_TABLE_STYLE, pool);
 
 		table.getTable().addMouseListener(new MouseListener() {
 
@@ -72,7 +71,7 @@ public class AnimationsOutline extends DefaultOutline {
 	protected ToolBarManager createToolBarManager(Composite parent) {
 		ToolBarManager tbm = new ToolBarManager(SWT.FLAT);
 		tbm.createControl(parent);
-		tbm.add(new NewAnimationAction(parent.getShell(), pool));
+		tbm.add(new NewActorAction(parent.getShell(), pool));
 
 		return tbm;
 	}

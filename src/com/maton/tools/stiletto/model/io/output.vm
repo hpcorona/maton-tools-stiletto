@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bundle>
-#set($images = $bundle.images.list)
   <images>
-#foreach($image in $images)
+#foreach($image in $bundle.images.list)
     <image name="${image.exportName}" filename="${image.name}" export="${image.export}" />
 #end
   </images>
@@ -25,4 +24,13 @@
 	</animation>
 #end
   </animations>
+  <actors>
+#foreach($actor in $bundle.actors.list)
+    <actor name="${actor.name}">
+#foreach($action in $actor.list)
+      <action name="${action.name}" animation="${action.source.name}" />
+#end
+	</actor>
+#end
+  </actors>
 </bundle>
