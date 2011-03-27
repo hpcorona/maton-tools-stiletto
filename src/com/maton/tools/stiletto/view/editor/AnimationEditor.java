@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Listener;
 
 import com.maton.tools.stiletto.model.Animation;
 import com.maton.tools.stiletto.model.Frame;
-import com.maton.tools.stiletto.model.IModelListener;
 import com.maton.tools.stiletto.model.Sprite;
+import com.maton.tools.stiletto.model.base.IModelListener;
 import com.maton.tools.stiletto.view.dnd.IDropReceiver;
 import com.maton.tools.stiletto.view.dnd.TargetTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
@@ -123,7 +123,7 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 					@Override
 					public void drop(Control source, Object data, int idx) {
 						if (data instanceof Sprite) {
-							Frame frame = animation.addFrame((Sprite) data);
+							Frame frame = animation.addChild((Sprite) data);
 							table.getViewer().getTable()
 									.setSelection(animation.indexOf(frame));
 
@@ -342,7 +342,7 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 		}
 
 		if (newIdx > prevIdx) {
-			current = animation.getFrame(newIdx);
+			current = animation.getChild(newIdx);
 			prevIdx = newIdx;
 			refreshGraphics();
 			return TIME_INC;
@@ -359,7 +359,7 @@ public class AnimationEditor extends DefaultEditor implements IGraphicsEditor,
 			return 1000; // 1 segundo de delay
 		}
 
-		current = animation.getFrame(newIdx);
+		current = animation.getChild(newIdx);
 		prevIdx = newIdx;
 		refreshGraphics();
 		return TIME_INC;

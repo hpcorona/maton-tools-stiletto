@@ -5,45 +5,36 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 
+import com.maton.tools.stiletto.model.base.BasePool;
 
-public class ImagePool extends ModelEventProvider {
-	private HashMap<String, Image> images;
+public class ImagePool extends BasePool<Image> {
 	private BundleContext ctx;
 
 	public ImagePool(BundleContext ctx) {
-		images = new HashMap<String, Image>();
+		super();
 		this.ctx = ctx;
 	}
 
 	public void free() {
-		Collection<Image> imgs = images.values();
-		for (Image img : imgs) {
+		for (Image img : elements) {
 			img.free();
 			notifyChange(img);
 		}
 	}
-	
+
 	public void removeUnloaded() {
-		String key;
-		
-		ArrayList<String> toDelete = new ArrayList<String>();
-		
-		Iterator<String> iter = images.keySet().iterator();
-		while ((key = iter.next()) != null) {
-			Image img = images.get(key);
-			
+		ArrayList<Image> toDelete = new ArrayList<Image>();
+
+		for(Image img : elements) {
 			if (!img.isLoaded()) {
-				toDelete.add(key);
+				toDelete.add(img);
 			}
 		}
-		
-		for (String k : toDelete) {
-			notifyDelete(images.get(k));
-			images.remove(k);
+
+		for (Image img : toDelete) {
+			notifyDelete(img);
+			elements.remove(img);
 		}
 	}
 
@@ -63,28 +54,31 @@ public class ImagePool extends ModelEventProvider {
 		}
 	}
 
+	public Image loadSingle(String filename) {
+		String path = ctx.getImagePath(filename);
+		
+		return loadSingle(new File(path));
+	}
+	
 	public Image loadSingle(File png) {
 		String fileName = png.getName();
 
-		int idxExt = fileName.lastIndexOf('.');
-		String name = fileName.substring(0, idxExt);
-
-		Image img = images.get(name);
+		Image img = getElement(fileName);
 		if (img == null) {
 			img = new Image(fileName, ctx);
 
-			images.put(name, img);
-			
+			elements.add(img);
+
 			notifyNew(img);
 		} else {
 			img.reload();
-			
+
 			notifyChange(img);
 		}
-		
+
 		return img;
 	}
-
+	
 	public boolean importFile(File source) {
 		File target = new File(ctx.getImagePath(""));
 		if (source.getAbsolutePath().equals(target.getAbsolutePath())) {
@@ -118,13 +112,19 @@ public class ImagePool extends ModelEventProvider {
 			return false;
 		}
 	}
-	
-	public Image getImage(String name) {
-		return images.get(name);
+
+	@Override
+	public void clear() {
+		for (Image img : elements) {
+			img.free();
+		}
+		
+		super.clear();
 	}
-	
-	public Object[] toArray() {
-		return images.values().toArray();
+
+	@Override
+	public Image createElement(String name) {
+		return new Image(name, ctx);
 	}
 
 }

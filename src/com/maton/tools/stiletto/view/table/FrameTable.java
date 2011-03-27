@@ -73,7 +73,7 @@ public class FrameTable extends DefaultTable<Frame> {
 			public void move(Object data, int idx1) {
 				int idx0 = animation.indexOf((Frame) data);
 
-				animation.moveFrame(idx0, idx1);
+				animation.moveChild(idx0, idx1);
 				table.setSelection(idx1);
 			}
 
@@ -83,10 +83,10 @@ public class FrameTable extends DefaultTable<Frame> {
 					Sprite spr = (Sprite) data;
 
 					if (idx < 0) {
-						Frame frame = animation.addFrame(spr);
+						Frame frame = animation.addChild(spr);
 						table.select(animation.indexOf(frame));
 					} else {
-						animation.addFrame(spr, idx);
+						animation.addChild(spr, idx);
 						table.select(idx);
 					}
 				}
@@ -151,7 +151,7 @@ public class FrameTable extends DefaultTable<Frame> {
 
 		@Override
 		public Image getImage(Frame element) {
-			return element.getSource().imageCount() == 0 ? EMPTY : SPRITE;
+			return element.getSource().childCount() == 0 ? EMPTY : SPRITE;
 		}
 
 	}

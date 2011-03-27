@@ -28,7 +28,7 @@ public class DeleteFrameAction extends Action {
 			return;
 		}
 
-		animation.removeFrame(frame);
+		animation.removeChild(frame);
 	}
 
 }

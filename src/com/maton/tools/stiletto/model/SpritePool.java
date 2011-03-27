@@ -1,28 +1,30 @@
 package com.maton.tools.stiletto.model;
 
-import java.util.ArrayList;
+import com.maton.tools.stiletto.model.base.BasePool;
 
-public class SpritePool extends ModelEventProvider {
+public class SpritePool extends BasePool<Sprite> {
 
+	public static final Sprite EMPTY = new Sprite("< empty >");
+	
 	protected BundleContext ctx;
-	protected ArrayList<Sprite> sprites;
 	
 	public SpritePool(BundleContext ctx) {
+		super();
 		this.ctx = ctx;
-		sprites = new ArrayList<Sprite>();
 	}
 	
-	public Object[] toArray() {
-		return sprites.toArray();
+	@Override
+	public Sprite getElement(String name) {
+		if (name.equals("< empty >")) {
+			return EMPTY;
+		}
+		
+		return super.getElement(name);
 	}
 
-	public Sprite newSprite(String value) {
-		Sprite spr = new Sprite();
-		spr.setName(value);
-		
-		notifyNew(spr);
-		
-		return spr;
+	@Override
+	public Sprite createElement(String name) {
+		return new Sprite(name);
 	}
 	
 }

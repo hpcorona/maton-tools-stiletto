@@ -3,8 +3,8 @@ package com.maton.tools.stiletto.view.dnd;
 import com.maton.tools.stiletto.model.Animation;
 import com.maton.tools.stiletto.model.Frame;
 import com.maton.tools.stiletto.model.Image;
-import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
+import com.maton.tools.stiletto.model.base.Positioned;
 
 public class TransferType {
 

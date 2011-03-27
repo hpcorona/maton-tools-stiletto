@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
+import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.view.dnd.IDragProvider;
 import com.maton.tools.stiletto.view.dnd.IDropReceiver;
 import com.maton.tools.stiletto.view.dnd.SourceTransferDefault;
@@ -77,7 +77,7 @@ public class PositionedTable extends
 				int idx0 = sprite
 						.indexOf((Positioned<com.maton.tools.stiletto.model.Image>) data);
 
-				sprite.moveImage(idx0, idx1);
+				sprite.moveChild(idx0, idx1);
 				table.setSelection(idx1);
 			}
 
@@ -88,10 +88,10 @@ public class PositionedTable extends
 
 					if (idx < 0) {
 						Positioned<com.maton.tools.stiletto.model.Image> pos = sprite
-								.addImage(img);
+								.addChild(img);
 						table.select(sprite.indexOf(pos));
 					} else {
-						sprite.addImage(img, idx);
+						sprite.addChild(img, idx);
 						table.select(idx);
 					}
 				}

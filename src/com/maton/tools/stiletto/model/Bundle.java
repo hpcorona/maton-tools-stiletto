@@ -4,6 +4,9 @@ import java.io.File;
 
 import org.eclipse.swt.graphics.Device;
 
+import com.maton.tools.stiletto.model.io.ModelInput;
+import com.maton.tools.stiletto.model.io.ModelOutput;
+
 public class Bundle {
 	protected File file;
 	protected ImagePool images;
@@ -20,8 +23,13 @@ public class Bundle {
 		images = new ImagePool(ctx);
 		sprites = new SpritePool(ctx);
 		animations = new AnimationPool(ctx);
-
-		images.reload();
+		
+		if (file.exists()) {
+			load();
+		} else {
+			images.reload();
+			save();
+		}
 	}
 
 	public ImagePool getImages() {
@@ -51,10 +59,20 @@ public class Bundle {
 	}
 
 	public void save() {
-
+		ModelOutput.save(this);
 	}
 
 	public void load() {
+		ModelInput.load(this);
+	}
 
+	public File getFile() {
+		return file;
+	}
+
+	public void clear() {
+		animations.clear();
+		sprites.clear();
+		images.clear();
 	}
 }

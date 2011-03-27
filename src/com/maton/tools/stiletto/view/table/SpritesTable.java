@@ -77,9 +77,10 @@ public class SpritesTable extends DefaultTable<Sprite> {
 					public void drop(Control source, Object data, int idx) {
 						if (data instanceof com.maton.tools.stiletto.model.Image) {
 							com.maton.tools.stiletto.model.Image img = (com.maton.tools.stiletto.model.Image) data;
-							Sprite sprite = pool.newSprite(img.getExportName());
+							Sprite sprite = pool
+									.newElement(img.getExportName());
 							sprite.setRendered(false);
-							sprite.addImage(img);
+							sprite.addChild(img);
 						}
 					}
 				});

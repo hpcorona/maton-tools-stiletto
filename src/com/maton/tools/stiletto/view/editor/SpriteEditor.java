@@ -15,10 +15,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import com.maton.tools.stiletto.model.IModelListener;
 import com.maton.tools.stiletto.model.Image;
-import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
+import com.maton.tools.stiletto.model.base.IModelListener;
+import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.view.dnd.IDropReceiver;
 import com.maton.tools.stiletto.view.dnd.TargetTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
@@ -95,7 +95,7 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 			@Override
 			public void drop(Control source, Object data, int idx) {
 				if (data instanceof Image) {
-					Positioned<Image> img = sprite.addImage((Image) data);
+					Positioned<Image> img = sprite.addChild((Image) data);
 					table.getViewer().getTable().setSelection(sprite.indexOf(img));
 					
 					refreshGraphics();

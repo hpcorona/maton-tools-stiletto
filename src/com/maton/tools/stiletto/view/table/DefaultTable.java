@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.maton.tools.stiletto.model.IModelListener;
+import com.maton.tools.stiletto.model.base.IModelListener;
 
 public abstract class DefaultTable<T> extends LabelProvider implements
 		ITableLabelProvider, ICellModifier, IStructuredContentProvider,

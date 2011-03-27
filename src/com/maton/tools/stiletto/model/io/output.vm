@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bundle>
+#set($images = $bundle.images.list)
+  <images>
+#foreach($image in $images)
+    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" />
+#end
+  </images>
+#set($sprites = $bundle.sprites.list)
+  <sprites>
+#foreach($sprite in $sprites)
+    <sprite name="${sprite.name}" rendered="${sprite.rendered}" image="${sprite.imageName}">
+#foreach($component in $sprite.list)
+      <module name="${component.source.name}" x="${component.x}" y="${component.y}" alpha="${component.alpha}" rotation="${component.rotation}" />
+#end
+	</sprite>
+#end
+  </sprites>
+  <animations>
+#foreach($animation in $bundle.animations.list)
+    <animation name="${animation.name}">
+#foreach($frame in $animation.list)
+      <frame sprite="${frame.source.name}" time="${frame.time}" />
+#end
+	</animation>
+#end
+  </animations>
+</bundle>

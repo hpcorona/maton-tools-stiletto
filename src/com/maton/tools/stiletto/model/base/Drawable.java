@@ -1,4 +1,4 @@
-package com.maton.tools.stiletto.model;
+package com.maton.tools.stiletto.model.base;
 
 import org.eclipse.swt.graphics.GC;
 

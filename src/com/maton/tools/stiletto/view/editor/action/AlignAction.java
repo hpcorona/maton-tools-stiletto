@@ -4,7 +4,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.maton.tools.stiletto.model.Image;
-import com.maton.tools.stiletto.model.Positioned;
+import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.view.table.PositionedTable;
 
 public class AlignAction extends Action {

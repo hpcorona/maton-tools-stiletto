@@ -1,6 +1,7 @@
-package com.maton.tools.stiletto.model;
+package com.maton.tools.stiletto.model.base;
 
 import org.eclipse.swt.graphics.GC;
+
 
 public class Positioned<T extends Drawable> implements Drawable {
 

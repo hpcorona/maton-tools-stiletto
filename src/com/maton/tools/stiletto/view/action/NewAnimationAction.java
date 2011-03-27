@@ -35,7 +35,7 @@ public class NewAnimationAction extends Action {
 								.nextInt()), new Validator());
 
 		if (dialog.open() == Window.OK) {
-			pool.newAnimation(dialog.getValue());
+			pool.newElement(dialog.getValue());
 		}
 	}
 

@@ -4,8 +4,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.maton.tools.stiletto.model.Image;
-import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
+import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.view.table.PositionedTable;
 
 public class DeleteImageAction extends Action {
@@ -29,7 +29,7 @@ public class DeleteImageAction extends Action {
 			return;
 		}
 
-		sprite.removeImage(img);
+		sprite.removeChild(img);
 	}
 
 }

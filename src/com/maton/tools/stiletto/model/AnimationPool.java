@@ -1,28 +1,19 @@
 package com.maton.tools.stiletto.model;
 
-import java.util.ArrayList;
+import com.maton.tools.stiletto.model.base.BasePool;
 
-public class AnimationPool extends ModelEventProvider {
+public class AnimationPool extends BasePool<Animation> {
 
 	protected BundleContext ctx;
-	protected ArrayList<Animation> animations;
 
 	public AnimationPool(BundleContext ctx) {
+		super();
 		this.ctx = ctx;
-		animations = new ArrayList<Animation>();
 	}
 
-	public Object[] toArray() {
-		return animations.toArray();
-	}
-
-	public Animation newAnimation(String value) {
-		Animation anim = new Animation();
-		anim.setName(value);
-
-		notifyNew(anim);
-
-		return anim;
+	@Override
+	public Animation createElement(String name) {
+		return new Animation(name);
 	}
 
 }

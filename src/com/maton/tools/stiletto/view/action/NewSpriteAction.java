@@ -35,7 +35,7 @@ public class NewSpriteAction extends Action {
 								.nextInt()), new Validator());
 
 		if (dialog.open() == Window.OK) {
-			pool.newSprite(dialog.getValue());
+			pool.newElement(dialog.getValue());
 		}
 	}
 

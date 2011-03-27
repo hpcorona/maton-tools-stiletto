@@ -3,8 +3,11 @@ package com.maton.tools.stiletto.model;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Transform;
 
+import com.maton.tools.stiletto.model.base.Drawable;
+import com.maton.tools.stiletto.model.base.IBaseModel;
 
-public class Image implements Drawable {
+
+public class Image implements Drawable, IBaseModel {
 	
 	private org.eclipse.swt.graphics.Image image;
 	private boolean export;
@@ -109,6 +112,11 @@ public class Image implements Drawable {
 
 	public void setExportName(String exportName) {
 		this.exportName = exportName;
+	}
+
+	@Override
+	public void setName(String name) {
+		throw new RuntimeException("Cannot change an image's name");
 	}
 
 }

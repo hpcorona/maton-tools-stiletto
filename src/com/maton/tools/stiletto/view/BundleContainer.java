@@ -118,11 +118,13 @@ public class BundleContainer {
 		BundleEditor[] bundle = null;
 		
 		if (opened != null) {
+			File basePath = new File(opened).getParentFile();
+			
 			String[] files = dialog.getFileNames();
 			bundle = new BundleEditor[files.length];
 			int idx = 0;
 			for (String f : files) {
-				File file = new File(f);
+				File file = new File(basePath, f);
 				
 				bundle[idx] = new BundleEditor(container, file);
 				

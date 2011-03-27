@@ -1,4 +1,4 @@
-package com.maton.tools.stiletto.model;
+package com.maton.tools.stiletto.model.base;
 
 public interface IModelListener {
 	public void notifyInsert(Object obj, int idx);

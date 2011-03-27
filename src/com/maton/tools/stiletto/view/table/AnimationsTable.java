@@ -48,9 +48,9 @@ public class AnimationsTable extends DefaultTable<Animation> {
 					public void drop(Control source, Object data, int idx) {
 						if (data instanceof Sprite) {
 							Sprite sprite = (Sprite) data;
-							Animation animation = pool.newAnimation(sprite
+							Animation animation = pool.newElement(sprite
 									.getName());
-							animation.addFrame(sprite);
+							animation.addChild(sprite);
 						}
 					}
 				});
