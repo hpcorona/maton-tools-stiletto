@@ -1,5 +1,6 @@
 package com.maton.tools.stiletto.model.io;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,6 +14,7 @@ import com.maton.tools.stiletto.model.Action;
 import com.maton.tools.stiletto.model.Actor;
 import com.maton.tools.stiletto.model.Animation;
 import com.maton.tools.stiletto.model.Bundle;
+import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.Frame;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Sprite;
@@ -41,6 +43,8 @@ public class ModelInput {
 					loadAnimations(child, bundle);
 				} else if (child.getName().equals("actors")) {
 					loadActors(child, bundle);
+				} else if (child.getName().equals("fonts")) {
+					loadFonts(child, bundle);
 				}
 			}
 
@@ -140,6 +144,63 @@ public class ModelInput {
 				Frame fra = anim.addChild(spr);
 				fra.setTime(time);
 			}
+		}
+	}
+
+	public static void loadFonts(XMLElement fonts, Bundle bundle) {
+		@SuppressWarnings("unchecked")
+		Vector<XMLElement> childs = fonts.getChildren();
+		for (XMLElement fnt : childs) {
+			String name = fnt.getStringAttribute("name");
+			String face = fnt.getStringAttribute("face");
+			int size = fnt.getIntAttribute("size");
+			boolean bold = fnt.getBooleanAttribute("bold", "true", "false", false);
+			boolean italic = fnt.getBooleanAttribute("italic", "true", "false", false);
+			
+			boolean fill = fnt.getBooleanAttribute("fill", "true", "false", true);
+			int fillAngle = fnt.getIntAttribute("fillAngle");
+			int fillColor0 = fnt.getIntAttribute("fillColor0");
+			int fillColor1 = fnt.getIntAttribute("fillColor1");
+			
+			boolean stroke = fnt.getBooleanAttribute("stroke", "true", "false", false);
+			int strokeWidth = fnt.getIntAttribute("strokeWidth");
+			int strokeAngle = fnt.getIntAttribute("strokeAngle");
+			int strokeColor0 = fnt.getIntAttribute("strokeColor0");
+			int strokeColor1 = fnt.getIntAttribute("strokeColor1");
+			
+			boolean shadow = fnt.getBooleanAttribute("shadow", "true", "false", true);
+			int shadowX = fnt.getIntAttribute("shadowX");
+			int shadowY = fnt.getIntAttribute("shadowY");
+			int shadowAlpha = fnt.getIntAttribute("shadowAlpha");
+			int shadowColor = fnt.getIntAttribute("shadowColor");
+			
+			String characters = fnt.getStringAttribute("characters");
+			
+			Font font = bundle.getFonts().newElement(name);
+			font.setName(name);
+			font.setFace(face);
+			font.setSize(size);
+			font.setBold(bold);
+			font.setItalic(italic);
+			
+			font.setFill(fill);
+			font.setFillAngle(fillAngle);
+			font.setFillColor0(new Color(fillColor0));
+			font.setFillColor1(new Color(fillColor1));
+			
+			font.setStroke(stroke);
+			font.setStrokeWidth(strokeWidth);
+			font.setStrokeAngle(strokeAngle);
+			font.setStrokeColor0(new Color(strokeColor0));
+			font.setStrokeColor1(new Color(strokeColor1));
+			
+			font.setShadow(shadow);
+			font.setShadowX(shadowX);
+			font.setShadowY(shadowY);
+			font.setShadowAlpha(shadowAlpha);
+			font.setShadowColor(new Color(shadowColor));
+			
+			font.setCharacters(characters);
 		}
 	}
 }

@@ -1,0 +1,435 @@
+package com.maton.tools.stiletto.model;
+
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextAttribute;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
+
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+
+import com.maton.tools.stiletto.model.base.IBaseModel;
+import com.maton.tools.stiletto.util.SwingTools;
+
+public class Font implements IBaseModel {
+
+	protected String name;
+	protected String face;
+	protected int size;
+	protected boolean bold;
+	protected boolean italic;
+
+	protected boolean fill;
+	protected int fillAngle;
+	protected Color fillColor0;
+	protected Color fillColor1;
+
+	protected boolean stroke;
+	protected int strokeWidth;
+	protected int strokeAngle;
+	protected Color strokeColor0;
+	protected Color strokeColor1;
+
+	protected boolean shadow;
+	protected int shadowX;
+	protected int shadowY;
+	protected int shadowAlpha;
+	protected Color shadowColor;
+	
+	protected String characters;
+	
+	protected Font(String name) {
+		this.name = name;
+		startup();
+	}
+
+	protected void startup() {
+		face = "Arial";
+		size = 20;
+		bold = false;
+		italic = false;
+
+		fill = true;
+		fillAngle = 0;
+		fillColor0 = Color.BLACK;
+		fillColor1 = Color.BLACK;
+
+		stroke = false;
+		strokeAngle = 0;
+		strokeColor0 = Color.WHITE;
+		strokeColor1 = Color.WHITE;
+
+		shadow = true;
+		shadowX = 0;
+		shadowY = 1;
+		shadowAlpha = 255;
+		shadowColor = Color.GRAY;
+		
+		characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789‡Ž’—œçƒêîò–„Ÿ†À?[]{}¡Á!~@#$%^&*()-=_+<>,./;:'\"\\|";
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getFace() {
+		return face;
+	}
+
+	public void setFace(String face) {
+		this.face = face;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public boolean isBold() {
+		return bold;
+	}
+
+	public void setBold(boolean bold) {
+		this.bold = bold;
+	}
+
+	public boolean isItalic() {
+		return italic;
+	}
+
+	public void setItalic(boolean italic) {
+		this.italic = italic;
+	}
+
+	public boolean isFill() {
+		return fill;
+	}
+
+	public void setFill(boolean fill) {
+		this.fill = fill;
+	}
+
+	public int getFillAngle() {
+		return fillAngle;
+	}
+
+	public void setFillAngle(int fillAngle) {
+		this.fillAngle = fillAngle;
+	}
+
+	public Color getFillColor0() {
+		return fillColor0;
+	}
+
+	public void setFillColor0(Color fillColor0) {
+		this.fillColor0 = fillColor0;
+	}
+
+	public Color getFillColor1() {
+		return fillColor1;
+	}
+
+	public void setFillColor1(Color fillColor1) {
+		this.fillColor1 = fillColor1;
+	}
+
+	public boolean isStroke() {
+		return stroke;
+	}
+
+	public void setStroke(boolean stroke) {
+		this.stroke = stroke;
+	}
+
+	public int getStrokeAngle() {
+		return strokeAngle;
+	}
+
+	public void setStrokeAngle(int strokeAngle) {
+		this.strokeAngle = strokeAngle;
+	}
+
+	public Color getStrokeColor0() {
+		return strokeColor0;
+	}
+
+	public void setStrokeColor0(Color strokeColor0) {
+		this.strokeColor0 = strokeColor0;
+	}
+
+	public Color getStrokeColor1() {
+		return strokeColor1;
+	}
+
+	public void setStrokeColor1(Color strokeColor1) {
+		this.strokeColor1 = strokeColor1;
+	}
+
+	public boolean isShadow() {
+		return shadow;
+	}
+
+	public void setShadow(boolean shadow) {
+		this.shadow = shadow;
+	}
+
+	public int getShadowX() {
+		return shadowX;
+	}
+
+	public void setShadowX(int shadowX) {
+		this.shadowX = shadowX;
+	}
+
+	public int getShadowY() {
+		return shadowY;
+	}
+
+	public void setShadowY(int shadowY) {
+		this.shadowY = shadowY;
+	}
+
+	public int getShadowAlpha() {
+		return shadowAlpha;
+	}
+
+	public void setShadowAlpha(int shadowAlpha) {
+		this.shadowAlpha = shadowAlpha;
+	}
+
+	public Color getShadowColor() {
+		return shadowColor;
+	}
+
+	public void setShadowColor(Color shadowColor) {
+		this.shadowColor = shadowColor;
+	}
+	
+	public int getFillColor0Int() {
+		return fillColor0.getRGB();
+	}
+	
+	public int getFillColor1Int() {
+		return fillColor1.getRGB();
+	}
+	
+	public int getStrokeColor0Int() {
+		return strokeColor0.getRGB();
+	}
+	
+	public int getStrokeColor1Int() {
+		return strokeColor1.getRGB();
+	}
+	
+	public int getShadowColorInt() {
+		return shadowColor.getRGB();
+	}
+
+	protected java.awt.Font font;
+	protected FontRenderContext context;
+
+	protected void regenFont(Graphics2D g) {
+		if (font != null) {
+			font = null;
+		}
+
+		int fontHints = java.awt.Font.PLAIN;
+
+		if (bold && italic) {
+			fontHints = java.awt.Font.ITALIC + java.awt.Font.BOLD;
+		} else if (bold) {
+			fontHints = java.awt.Font.BOLD;
+		} else if (italic) {
+			fontHints = java.awt.Font.ITALIC;
+		}
+
+		context = g.getFontRenderContext();
+		font = new java.awt.Font(face, fontHints, size);
+	}
+
+	public void draw(GC gc, int x, int y, char c, CharMetric metric) {
+		BufferedImage buff = new BufferedImage(size * 2, size * 2,
+				BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D g = buff.createGraphics();
+		regenFont(g);
+		calcMetrics(g, c, metric);
+		adjust(metric);
+		g.dispose();
+
+		ImageData data = SwingTools.convertToSWT(buff);
+		Image letter = new Image(gc.getDevice(), data);
+		gc.drawImage(letter, x, y);
+		letter.dispose();
+	}
+
+	public void adjust(CharMetric metric) {
+		if (metric.x < 0) {
+			metric.width -= metric.x;
+			metric.x = 0;
+		}
+
+		if (metric.y < 0) {
+			metric.height -= metric.y;
+			metric.y = 0;
+		}
+	}
+
+	public void calcMetrics(Graphics2D g, char letra, CharMetric metric) {
+		AttributedString as = new AttributedString("" + letra);
+		as.addAttribute(TextAttribute.FONT, font);
+
+		AttributedCharacterIterator aci = as.getIterator();
+		TextLayout tl = new TextLayout(aci, context);
+
+		metric.x = 0;
+		metric.width = 0;
+
+		if (tl.getBounds().getX() < 0) {
+			metric.x = -(int) tl.getBounds().getX() - 1;
+		} else {
+			metric.width = (int) tl.getBounds().getX() + 1;
+		}
+		metric.width += tl.getBounds().getWidth() + 1;
+
+		metric.height = 0;
+		metric.y = 0;
+
+		if (tl.getBounds().getY() < 0) {
+			metric.y -= tl.getBounds().getY();
+		} else {
+			metric.height = (int) tl.getBounds().getY() + 1;
+		}
+		metric.height += tl.getBounds().getHeight() + 1;
+
+		int offY = (int) (tl.getBounds().getHeight() + tl.getBounds().getY());
+		int offX = (int) (tl.getBounds().getWidth() + tl.getBounds().getX());
+
+		if (stroke) {
+			metric.width += strokeWidth + 1;
+			metric.height += strokeWidth + 1;
+			offY += (strokeWidth / 2) + 1;
+			offX += (strokeWidth / 2) + 1;
+			metric.x += (strokeWidth / 2) + 1;
+			metric.y += (strokeWidth / 2) + 1;
+		}
+
+		if (shadow) {
+			if (shadowX < 0) {
+				metric.x -= shadowX;
+				metric.width -= shadowX;
+			} else {
+				metric.width += shadowX;
+			}
+
+			if (shadowY < 0) {
+				metric.y -= shadowY;
+				metric.height -= shadowY;
+			} else {
+				metric.height += shadowY;
+			}
+		}
+
+		metric.xadvance = (int) tl.getAdvance();
+	}
+
+	public void renderChar(Graphics2D g, char letra, int x, int y,
+			CharMetric metric) {
+		AttributedString as = new AttributedString("" + letra);
+		as.addAttribute(TextAttribute.FONT, font);
+
+		AttributedCharacterIterator aci = as.getIterator();
+		TextLayout tl = new TextLayout(aci, context);
+
+		if (metric.x < 0) {
+			metric.width -= metric.x;
+			x += metric.x;
+			metric.x = 0;
+		}
+
+		if (metric.y < 0) {
+			metric.height -= metric.y;
+			y += metric.y;
+			metric.y = 0;
+		}
+
+		// Shadow
+		if (shadow) {
+			AlphaComposite ac = AlphaComposite.SrcOver
+					.derive(((float) shadowAlpha) / 255.0f);
+			g.setComposite(ac);
+
+			Shape shadowClip = tl.getOutline(AffineTransform
+					.getTranslateInstance(metric.x + x + shadowX, metric.y + y
+							+ shadowY));
+			g.setColor(shadowColor);
+			g.fill(shadowClip);
+
+			if (stroke) {
+				g.setStroke(new BasicStroke(strokeWidth));
+				g.draw(shadowClip);
+			}
+
+			g.setComposite(AlphaComposite.Src);
+		}
+
+		// Fill
+		Shape outlineClip = tl.getOutline(AffineTransform.getTranslateInstance(
+				metric.x + x, metric.y + y));
+		if (fill) {
+			if (fillAngle == 0) {
+				g.setPaint(new GradientPaint(x, y, fillColor0, x, y + metric.y
+						+ metric.height, fillColor1));
+			} else {
+				g.setPaint(new GradientPaint(x, y, fillColor0, x + metric.x
+						+ metric.width, y, fillColor1));
+			}
+			g.fill(outlineClip);
+		}
+
+		// Outline
+		if (stroke) {
+			if (strokeAngle == 0) {
+				g.setPaint(new GradientPaint(x, y, strokeColor0, x, y
+						+ metric.y + metric.height, strokeColor1));
+			} else {
+				g.setPaint(new GradientPaint(x, y, strokeColor0, x + metric.x
+						+ metric.width, y, strokeColor1));
+			}
+			g.setStroke(new BasicStroke(strokeWidth));
+			g.draw(outlineClip);
+		}
+	}
+
+	public String getCharacters() {
+		return characters;
+	}
+
+	public void setCharacters(String characters) {
+		this.characters = characters;
+	}
+
+	public int getStrokeWidth() {
+		return strokeWidth;
+	}
+
+	public void setStrokeWidth(int strokeWidth) {
+		this.strokeWidth = strokeWidth;
+	}
+}

@@ -13,6 +13,7 @@ public class Bundle {
 	protected SpritePool sprites;
 	protected AnimationPool animations;
 	protected ActorPool actors;
+	protected FontPool fonts;
 	protected BundleContext ctx;
 
 	public Bundle(Device device, File file) {
@@ -25,7 +26,8 @@ public class Bundle {
 		sprites = new SpritePool(ctx);
 		animations = new AnimationPool(ctx);
 		actors = new ActorPool(ctx);
-		
+		fonts = new FontPool(ctx);
+
 		if (file.exists()) {
 			load();
 		} else {
@@ -45,9 +47,13 @@ public class Bundle {
 	public AnimationPool getAnimations() {
 		return animations;
 	}
-	
+
 	public ActorPool getActors() {
 		return actors;
+	}
+
+	public FontPool getFonts() {
+		return fonts;
 	}
 
 	public void refresh() {
@@ -77,9 +83,11 @@ public class Bundle {
 	}
 
 	public void clear() {
+		fonts.clear();
 		actors.clear();
 		animations.clear();
 		sprites.clear();
 		images.clear();
 	}
+
 }

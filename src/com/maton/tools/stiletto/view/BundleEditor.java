@@ -82,7 +82,7 @@ public class BundleEditor {
 		sprites = new SpritesOutline(sections, 1, bundle.getSprites());
 		animations = new AnimationsOutline(sections, 2, bundle.getAnimations());
 		actors = new ActorsOutline(sections, 3, bundle.getActors());
-		fonts = new FontsOutline(sections, 4);
+		fonts = new FontsOutline(sections, 4, bundle.getFonts());
 
 		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gd.verticalAlignment = SWT.FILL;

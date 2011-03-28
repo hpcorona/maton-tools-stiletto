@@ -30,7 +30,7 @@ public class Application extends ApplicationWindow {
 	}
 
 	protected void initializeBounds() {
-		getShell().setSize(800, 600);
+		getShell().setSize(800, 700);
 		getShell().setLocation(40, 40);
 	}
 

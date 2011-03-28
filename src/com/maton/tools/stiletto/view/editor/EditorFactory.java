@@ -4,6 +4,7 @@ import org.eclipse.swt.custom.CTabFolder;
 
 import com.maton.tools.stiletto.model.Actor;
 import com.maton.tools.stiletto.model.Animation;
+import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.SpritePool;
@@ -30,6 +31,10 @@ public class EditorFactory {
 
 		if (obj instanceof Actor) {
 			editor = new ActorEditor(parent, (Actor) obj);
+		}
+
+		if (obj instanceof Font) {
+			editor = new FontEditor(parent, (Font) obj);
 		}
 
 		if (editor != null) {
