@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build" default="build">
+
+	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" />
+
+	<property name="app.name" value="Stiletto" />
+	<property name="bin.dir" value="bin" />
+	<property name="build.dir" value="build" />
+	<property name="lib.dir" value="lib" />
+	<property name="jar.file" value="${build.dir}/stiletto.jar" />
+	<property name="class.path" value="org.eclipse.core.commands_3.6.0.I20100512-1500.jar org.eclipse.equinox.common_3.6.0.v20100503.jar org.eclipse.jface_3.6.2.M20110210-1200.jar org.eclipse.jface.databinding_1.4.0.I20100601-0800.jar org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar org.eclipse.osgi_3.6.2.R36x_v20110210.jar org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar velocity-1.7-dep.jar velocity-1.7.jar swt-gtkx86.jar swt-osx32.jar swt-osx64.jar swt-win32.jar" />
+
+	<property name="main.class" value="com.maton.tools.stiletto.Main" />
+
+	<property name="osx32.dir" value="${build.dir}/osx32" />
+	<property name="osx64.dir" value="${build.dir}/osx64" />
+	<property name="win32.dir" value="${build.dir}/win32" />
+	<property name="gtk32.dir" value="${build.dir}/gtk32" />
+
+	<property name="osx32.swt" value="${lib.dir}/swt-osx32.jar" />
+	<property name="osx64.swt" value="${lib.dir}/swt-osx64.jar" />
+	<property name="win32.swt" value="${lib.dir}/swt-win32.jar" />
+	<property name="gtk32.swt" value="${lib.dir}/swt-gtkx86.jar" />
+
+
+	<fileset id="libs" dir="lib" excludes="jarbundler*,swt*" />
+
+	<target name="build" depends="clean,osx32,osx64,win32,gtk32" description="Build All">
+	</target>
+
+	<target name="clean">
+		<delete dir="build" />
+	</target>
+
+	<target name="jar">
+		<mkdir dir="build" />
+		<jar destfile="${jar.file}" basedir="bin">
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+				<attribute name="Class-Path" value="${class.path}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="osx32" depends="jar">
+		<mkdir dir="${osx32.dir}" />
+		<copy todir="${osx32.dir}" verbose="true">
+			<fileset refid="libs" />
+		</copy>
+		<copy file="${osx32.swt}" todir="${osx32.dir}" />
+		<copy file="${jar.file}" todir="${osx32.dir}" />
+		<jarbundler dir="${osx32.dir}" name="${app.name}" mainclass="${main.class}" startOnMainThread="true">
+			<jarfileset dir="${osx32.dir}">
+				<include name="**/*.jar" />
+			</jarfileset>
+			<documenttype name="Stiletto bundle" extensions="stil" role="Editor" />
+		</jarbundler>
+		<delete dir="${osx32.dir}" excludes="${app.name}.app/**">
+		</delete>
+	</target>
+
+	<target name="osx64">
+		<mkdir dir="${osx64.dir}" />
+		<copy todir="${osx64.dir}" verbose="true">
+			<fileset refid="libs" />
+		</copy>
+		<copy file="${osx64.swt}" todir="${osx64.dir}" />
+		<copy file="${jar.file}" todir="${osx64.dir}" />
+		<jarbundler dir="${osx64.dir}" name="${app.name}" mainclass="${main.class}" startOnMainThread="true">
+			<jarfileset dir="${osx64.dir}">
+				<include name="**/*.jar" />
+			</jarfileset>
+			<documenttype name="Stiletto bundle" extensions="stil" role="Editor" />
+		</jarbundler>
+		<delete dir="${osx64.dir}" excludes="${app.name}.app/**">
+		</delete>
+	</target>
+
+	<target name="win32">
+		<mkdir dir="${win32.dir}" />
+		<copy todir="${win32.dir}" verbose="true">
+			<fileset refid="libs" />
+		</copy>
+		<copy file="${win32.swt}" todir="${win32.dir}" />
+		<copy file="${jar.file}" todir="${win32.dir}" />
+		<!-- -XstartOnFirstThread -->
+	</target>
+
+	<target name="gtk32">
+		<mkdir dir="${gtk32.dir}" />
+		<copy todir="${gtk32.dir}" verbose="true">
+			<fileset refid="libs" />
+		</copy>
+		<copy file="${gtk32.swt}" todir="${gtk32.dir}" />
+		<copy file="${jar.file}" todir="${gtk32.dir}" />
+		<!-- -XstartOnFirstThread -->
+	</target>
+
+</project>
