@@ -72,8 +72,7 @@
 			</jarfileset>
 			<documenttype name="Stiletto bundle" extensions="stil" role="Editor" />
 		</jarbundler>
-		<delete dir="${osx64.dir}" excludes="${app.name}.app/**">
-		</delete>
+		<delete dir="${osx64.dir}" excludes="${app.name}.app/**" />
 	</target>
 
 	<target name="win32">
@@ -84,6 +83,9 @@
 		<copy file="${win32.swt}" todir="${win32.dir}" />
 		<copy file="${jar.file}" todir="${win32.dir}" />
 		<!-- -XstartOnFirstThread -->
+		<echo file="${win32.dir}/run.bat">javaw -XstartOnFirstThread -jar stiletto.jar</echo>
+		<zip destfile="${win32.dir}/Stiletto.zip" basedir="${win32.dir}" />
+		<delete dir="${win32.dir}" excludes="Stiletto.zip" />
 	</target>
 
 	<target name="gtk32">
@@ -94,6 +96,10 @@
 		<copy file="${gtk32.swt}" todir="${gtk32.dir}" />
 		<copy file="${jar.file}" todir="${gtk32.dir}" />
 		<!-- -XstartOnFirstThread -->
+		<echo file="${gtk32.dir}/run.sh">javaw -XstartOnFirstThread -jar stiletto.jar</echo>
+		<tar destfile="${gtk32.dir}/Stiletto.tar" basedir="${gtk32.dir}" />
+		<gzip destfile="${gtk32.dir}/Stiletto.tar.gz" src="${gtk32.dir}/Stiletto.tar" />
+		<delete dir="${gtk32.dir}" excludes="Stiletto.tar.gz" />
 	</target>
 
 </project>
