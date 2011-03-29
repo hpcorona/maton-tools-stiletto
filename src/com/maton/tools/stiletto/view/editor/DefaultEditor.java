@@ -19,6 +19,7 @@ public abstract class DefaultEditor {
 
 	protected static Image GUIDE;
 	protected static Image GRID;
+	protected static Image GRIDBLACK;
 
 	protected CTabFolder parent;
 	protected CTabItem item;
@@ -182,10 +183,15 @@ public abstract class DefaultEditor {
 	static {
 		Display display = Display.getCurrent();
 		GRID = new Image(display, 299, 299);
+		GRIDBLACK = new Image(display, 299, 299);
 		GC gc = new GC(GRID);
+		GC gc2 = new GC(GRIDBLACK);
 		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 		gc.fillRectangle(0, 0, 299, 299);
+		gc2.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+		gc2.fillRectangle(0, 0, 299, 299);
 		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+		gc2.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 		boolean par = false;
 		boolean impar = false;
 		for (int x = 0; x < 300; x += 30) {
@@ -197,12 +203,14 @@ public abstract class DefaultEditor {
 			for (int y = 0; y < 300; y += 30) {
 				if (impar) {
 					gc.fillRectangle(x, y, 30, 30);
+					gc2.fillRectangle(x, y, 30, 30);
 				}
 				impar = !impar;
 			}
 			par = !par;
 		}
 		gc.dispose();
+		gc2.dispose();
 
 		Image temp = new Image(display, 301, 301);
 		gc = new GC(temp);
@@ -227,9 +235,17 @@ public abstract class DefaultEditor {
 				gc.drawImage(GRID, x, y);
 			}
 		}
-		gc.drawImage(GRID, 0, 0);
 	}
-	
+
+	protected void drawGridBlack(GC gc) {
+		Rectangle rect = container.getClientArea();
+		for (int x = rect.x; x <= rect.x + rect.width; x += 299) {
+			for (int y = rect.y; y <= rect.y + rect.height; y += 299) {
+				gc.drawImage(GRIDBLACK, x, y);
+			}
+		}
+	}
+
 	protected void drawGuide(GC gc, int x, int y) {
 		gc.drawImage(GUIDE, -150 + x, -150 + y);
 	}

@@ -5,6 +5,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
@@ -13,10 +14,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.util.StringTokenizer;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.widgets.Display;
 
 import com.maton.tools.stiletto.model.base.IBaseModel;
 import com.maton.tools.stiletto.util.SwingTools;
@@ -45,10 +48,10 @@ public class Font implements IBaseModel {
 	protected int shadowY;
 	protected int shadowAlpha;
 	protected Color shadowColor;
-	
+
 	protected String characters;
-	
-	protected Font(String name) {
+
+	public Font(String name) {
 		this.name = name;
 		startup();
 	}
@@ -74,7 +77,7 @@ public class Font implements IBaseModel {
 		shadowY = 1;
 		shadowAlpha = 255;
 		shadowColor = Color.GRAY;
-		
+
 		characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789‡Ž’—œçƒêîò–„Ÿ†À?[]{}¡Á!~@#$%^&*()-=_+<>,./;:'\"\\|";
 	}
 
@@ -221,23 +224,23 @@ public class Font implements IBaseModel {
 	public void setShadowColor(Color shadowColor) {
 		this.shadowColor = shadowColor;
 	}
-	
+
 	public int getFillColor0Int() {
 		return fillColor0.getRGB();
 	}
-	
+
 	public int getFillColor1Int() {
 		return fillColor1.getRGB();
 	}
-	
+
 	public int getStrokeColor0Int() {
 		return strokeColor0.getRGB();
 	}
-	
+
 	public int getStrokeColor1Int() {
 		return strokeColor1.getRGB();
 	}
-	
+
 	public int getShadowColorInt() {
 		return shadowColor.getRGB();
 	}
@@ -266,16 +269,21 @@ public class Font implements IBaseModel {
 
 	public void draw(GC gc, int x, int y, char c, CharMetric metric) {
 		BufferedImage buff = new BufferedImage(size * 2, size * 2,
-				BufferedImage.TYPE_4BYTE_ABGR);
+				BufferedImage.TYPE_4BYTE_ABGR_PRE);
 		Graphics2D g = buff.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 		regenFont(g);
 		calcMetrics(g, c, metric);
 		adjust(metric);
+		renderChar(g, c, 0, 0, metric);
 		g.dispose();
 
 		ImageData data = SwingTools.convertToSWT(buff);
-		Image letter = new Image(gc.getDevice(), data);
-		gc.drawImage(letter, x, y);
+		Image letter = new Image(Display.getCurrent(), data);
+		gc.drawImage(letter, x - metric.x, y - metric.y);
 		letter.dispose();
 	}
 
@@ -431,5 +439,30 @@ public class Font implements IBaseModel {
 
 	public void setStrokeWidth(int strokeWidth) {
 		this.strokeWidth = strokeWidth;
+	}
+
+	public String getCharactersList() {
+		String ints = "";
+
+		for (int i = 0; i < characters.length(); i++) {
+			int num = (int) characters.charAt(i);
+
+			if (i > 0) {
+				ints += ",";
+			}
+			ints += num;
+		}
+
+		return ints;
+	}
+
+	public void setCharactersList(String list) {
+		StringTokenizer tok = new StringTokenizer(list, ",");
+		characters = "";
+
+		while (tok.hasMoreTokens()) {
+			int c = Integer.parseInt(tok.nextToken());
+			characters += "" + ((char) c);
+		}
 	}
 }

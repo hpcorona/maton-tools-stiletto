@@ -200,7 +200,7 @@ public class ModelInput {
 			font.setShadowAlpha(shadowAlpha);
 			font.setShadowColor(new Color(shadowColor));
 			
-			font.setCharacters(characters);
+			font.setCharactersList(characters);
 		}
 	}
 }

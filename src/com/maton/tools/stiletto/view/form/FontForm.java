@@ -46,6 +46,7 @@ public class FontForm {
 	protected Button fillColor1;
 
 	protected Button stroke;
+	protected Text strokeWidth;
 	protected Button strokeAngleVertical;
 	protected Button strokeAngleHorizontal;
 	protected Button strokeColor0;
@@ -106,10 +107,11 @@ public class FontForm {
 
 		Label lblChars = new Label(container, SWT.NONE);
 		lblChars.setText("Chars:");
-		characters = new Text(container, SWT.MULTI | SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
+		characters = new Text(container, SWT.MULTI | SWT.WRAP | SWT.BORDER
+				| SWT.V_SCROLL);
 		characters.setLayoutData(new GridData(GridData.FILL_BOTH));
-		FormTools.forBoth(lblChars, characters, shadowColor, 10);
-		FormData data = (FormData)characters.getLayoutData();
+		FormTools.forBoth(lblChars, characters, shadowColor, 5);
+		FormData data = (FormData) characters.getLayoutData();
 		data.bottom = new FormAttachment(100);
 
 		setupEvents();
@@ -161,9 +163,9 @@ public class FontForm {
 		Group grp = new Group(container, SWT.NONE);
 		grp.setLayout(new RowLayout());
 		fillAngleVertical = new Button(grp, SWT.RADIO);
-		fillAngleVertical.setText("Vertical");
+		fillAngleVertical.setText("Horizontal");
 		fillAngleHorizontal = new Button(grp, SWT.RADIO);
-		fillAngleHorizontal.setText("Horizontal");
+		fillAngleHorizontal.setText("Vertical");
 
 		Label lblGradient = new Label(container, SWT.NONE);
 		lblGradient.setText("Color:");
@@ -172,11 +174,11 @@ public class FontForm {
 		fillColor0 = createColorButton(colorsFill);
 		fillColor1 = createColorButton(colorsFill);
 
-		FormTools.forBoth(lblFill, fill, italic, 10);
+		FormTools.forBoth(lblFill, fill, italic, 5);
 		FormTools.forBoth(lblAngleVert, grp, fill, 0);
 		FormTools.forBoth(lblGradient, colorsFill, grp, 0);
 	}
-	
+
 	Group colorsFill = null;
 	Group colorsStroke = null;
 
@@ -185,14 +187,18 @@ public class FontForm {
 		stroke = new Button(container, SWT.CHECK);
 		stroke.setText("Stroke");
 
+		Label lblStrokeWidth = new Label(container, SWT.NONE);
+		lblStrokeWidth.setText("Width:");
+		strokeWidth = new Text(container, SWT.BORDER | SWT.SINGLE);
+
 		Label lblAngleVert = new Label(container, SWT.NONE);
 		lblAngleVert.setText("Angle:");
 		Group grp = new Group(container, SWT.NONE);
 		grp.setLayout(new RowLayout());
 		strokeAngleVertical = new Button(grp, SWT.RADIO);
-		strokeAngleVertical.setText("Vertical");
+		strokeAngleVertical.setText("Horizontal");
 		strokeAngleHorizontal = new Button(grp, SWT.RADIO);
-		strokeAngleHorizontal.setText("Horizontal");
+		strokeAngleHorizontal.setText("Vertical");
 
 		Label lblGradient = new Label(container, SWT.NONE);
 		lblGradient.setText("Color:");
@@ -201,8 +207,9 @@ public class FontForm {
 		strokeColor0 = createColorButton(colorsStroke);
 		strokeColor1 = createColorButton(colorsStroke);
 
-		FormTools.forBoth(lblStroke, stroke, colorsFill, 10);
-		FormTools.forBoth(lblAngleVert, grp, stroke, 0);
+		FormTools.forBoth(lblStroke, stroke, colorsFill, 5);
+		FormTools.forBoth(lblStrokeWidth, strokeWidth, stroke, 0);
+		FormTools.forBoth(lblAngleVert, grp, strokeWidth, 0);
 		FormTools.forBoth(lblGradient, colorsStroke, grp, 0);
 	}
 
@@ -229,7 +236,7 @@ public class FontForm {
 		lblColor.setText("Color:");
 		shadowColor = createColorButton(container);
 
-		FormTools.forBoth(lblShadow, shadow, colorsStroke, 10);
+		FormTools.forBoth(lblShadow, shadow, colorsStroke, 5);
 		FormTools.forBoth(lblShadowX, shadowX, shadow, 0);
 		FormTools.forBoth(lblShadowY, shadowY, shadowX, 0);
 		FormTools.forBoth(lblAlpha, shadowAlpha, shadowY, 0);
@@ -281,11 +288,26 @@ public class FontForm {
 				}
 			}
 		});
+
+		strokeWidth.addListener(SWT.Verify, new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				String string = e.text;
+				char[] chars = new char[string.length()];
+				string.getChars(0, chars.length, chars, 0);
+				for (int i = 0; i < chars.length; i++) {
+					if (!('0' <= chars[i] && chars[i] <= '9')) {
+						e.doit = false;
+						return;
+					}
+				}
+			}
+		});
 	}
 
 	protected void screenToModel() {
 		font.setFace(face.getText());
-		font.setSize(Integer.valueOf(size.getText()));
+		font.setSize(Integer.valueOf("0" + size.getText()));
 		font.setBold(bold.getSelection());
 		font.setItalic(italic.getSelection());
 
@@ -295,6 +317,7 @@ public class FontForm {
 		font.setFillColor1(getSwingColor(fillColor1));
 
 		font.setStroke(stroke.getSelection());
+		font.setStrokeWidth(Integer.valueOf("0" + strokeWidth.getText()));
 		font.setStrokeAngle(strokeAngleHorizontal.getSelection() ? 0 : 1);
 		font.setStrokeColor0(getSwingColor(strokeColor0));
 		font.setStrokeColor1(getSwingColor(strokeColor1));
@@ -302,8 +325,8 @@ public class FontForm {
 		font.setShadow(shadow.getSelection());
 		font.setShadowAlpha(shadowAlpha.getSelection());
 		font.setShadowColor(getSwingColor(shadowColor));
-		font.setShadowX(Integer.valueOf(shadowX.getText()));
-		font.setShadowY(Integer.valueOf(shadowY.getText()));
+		font.setShadowX(Integer.valueOf("0" + shadowX.getText()));
+		font.setShadowY(Integer.valueOf("0" + shadowY.getText()));
 
 		font.setCharacters(characters.getText());
 	}
@@ -320,6 +343,7 @@ public class FontForm {
 		setSwingColor(fillColor1, font.getFillColor1());
 
 		stroke.setSelection(font.isStroke());
+		strokeWidth.setText("" + font.getStrokeWidth());
 		strokeAngleHorizontal.setSelection(font.getStrokeAngle() == 0);
 		setSwingColor(strokeColor0, font.getStrokeColor0());
 		setSwingColor(strokeColor1, font.getStrokeColor1());

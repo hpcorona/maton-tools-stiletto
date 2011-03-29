@@ -10,5 +10,6 @@ public class Main {
 		app.setBlockOnOpen(true);
 		app.open();
 		Display.getCurrent().dispose();
+		System.exit(0);
 	}
 }
