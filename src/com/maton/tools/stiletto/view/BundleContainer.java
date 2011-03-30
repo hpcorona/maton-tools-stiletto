@@ -99,7 +99,8 @@ public class BundleContainer {
 			File file = new File(fileName);
 			file.delete();
 
-			bundle = new BundleEditor(container, file);
+			current = new BundleEditor(container, file);
+			bundle = current;
 			bundle.build();
 
 			container.setSelection(bundle.getItem());

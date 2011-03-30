@@ -55,8 +55,8 @@
 			</jarfileset>
 			<documenttype name="Stiletto bundle" extensions="stil" role="Editor" />
 		</jarbundler>
-		<delete dir="${osx32.dir}" excludes="${app.name}.app/**">
-		</delete>
+		<delete dir="${osx32.dir}" excludes="${app.name}.app/**" />
+		<zip destfile="${osx32.dir}/Stiletto.app.zip" basedir="${osx32.dir}" />
 	</target>
 
 	<target name="osx64" depends="jar">
@@ -73,6 +73,7 @@
 			<documenttype name="Stiletto bundle" extensions="stil" role="Editor" />
 		</jarbundler>
 		<delete dir="${osx64.dir}" excludes="${app.name}.app/**" />
+		<zip destfile="${osx64.dir}/Stiletto.app.zip" basedir="${osx64.dir}" />
 	</target>
 
 	<target name="win32" depends="jar">
