@@ -72,7 +72,7 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	protected Control createControl(Composite parent) {
-		canvas = new Canvas(parent, SWT.BORDER);
+		canvas = new Canvas(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 
 		canvas.addListener(SWT.Paint, new Listener() {
 			@Override
@@ -178,12 +178,12 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	public void refreshGraphics() {
-		container.redraw();
+		canvas.setRedraw(true);
+		canvas.redraw();
 	}
 
 	protected void paint(Event e) {
-		e.gc.setAdvanced(true);
-		e.gc.setAntialias(SWT.ON);
+		fill(e.gc, canvas);
 
 		if (showGrid) {
 			drawGrid(e.gc);

@@ -106,7 +106,7 @@ public class ActorEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	protected Control createControl(Composite parent) {
-		canvas = new Canvas(parent, SWT.NO_BACKGROUND);
+		canvas = new Canvas(parent, SWT.NO_BACKGROUND | SWT.BORDER | SWT.DOUBLE_BUFFERED);
 
 		canvas.addListener(SWT.Paint, new Listener() {
 			@Override
@@ -237,10 +237,13 @@ public class ActorEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	public void refreshGraphics() {
-		container.redraw();
+		canvas.setRedraw(true);
+		canvas.redraw();
 	}
 
 	protected void paint(Event e) {
+		fill(e.gc, canvas);
+		
 		if (showGrid) {
 			drawGrid(e.gc);
 		}

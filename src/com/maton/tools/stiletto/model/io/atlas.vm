@@ -1,0 +1,5 @@
+<TextureAtlas imagePath="${image}">
+#foreach($part in $parts)
+  <SubTexture name="${part.name}" x="${part.outputX}" y="${part.outputY}" width="${part.width}" height="${part.height}" />
+#end
+</TextureAtlas>

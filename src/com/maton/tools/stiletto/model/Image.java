@@ -5,9 +5,10 @@ import org.eclipse.swt.graphics.Transform;
 
 import com.maton.tools.stiletto.model.base.Drawable;
 import com.maton.tools.stiletto.model.base.IBaseModel;
+import com.maton.tools.stiletto.model.base.IImageProvider;
 
 
-public class Image implements Drawable, IBaseModel {
+public class Image implements Drawable, IBaseModel, IImageProvider {
 	
 	private org.eclipse.swt.graphics.Image image;
 	private boolean export;
@@ -119,4 +120,12 @@ public class Image implements Drawable, IBaseModel {
 		throw new RuntimeException("Cannot change an image's name");
 	}
 
+	public Object getSelf() {
+		return this;
+	}
+
+	@Override
+	public java.awt.Image getImage() {
+		return ctx.loadAwtImage(name);
+	}
 }

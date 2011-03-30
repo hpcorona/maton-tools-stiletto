@@ -20,6 +20,7 @@ public abstract class DefaultEditor {
 	protected static Image GUIDE;
 	protected static Image GRID;
 	protected static Image GRIDBLACK;
+	protected static Color BACKGROUND;
 
 	protected CTabFolder parent;
 	protected CTabItem item;
@@ -34,9 +35,9 @@ public abstract class DefaultEditor {
 		item = new CTabItem(parent, SWT.CLOSE);
 		item.setData(this);
 	}
-	
+
 	public abstract void dispose();
-	
+
 	public abstract Object getData();
 
 	protected abstract Control createControl(Composite parent);
@@ -56,7 +57,7 @@ public abstract class DefaultEditor {
 		layout.horizontalSpacing = 0;
 		mainContainer.setLayout(layout);
 	}
-	
+
 	protected void createContainer() {
 		container = new Composite(mainContainer, SWT.NONE);
 		GridLayout layout = new GridLayout(1, true);
@@ -91,10 +92,11 @@ public abstract class DefaultEditor {
 		gd.grabExcessVerticalSpace = true;
 		child.setLayoutData(gd);
 	}
-	
+
 	protected boolean createExtraContainer() {
-		if (hasExtraControl() == false) return false;
-		
+		if (hasExtraControl() == false)
+			return false;
+
 		extraContainer = new Composite(mainContainer, SWT.BORDER);
 		GridLayout layout = new GridLayout(1, true);
 		layout.marginBottom = 0;
@@ -127,29 +129,29 @@ public abstract class DefaultEditor {
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;
 		child.setLayoutData(gd);
-		
+
 		return true;
 	}
-	
+
 	protected boolean hasExtraControl() {
 		return false;
 	}
-	
+
 	protected ToolBarManager createExtraToolBarManager(Composite parent) {
 		return null;
 	}
-	
+
 	protected Control createExtraControl(Composite parent) {
 		return null;
 	}
-	
+
 	protected void build() {
 		createMainContainer();
-		
+
 		createContainer();
 
 		GridData gd = null;
-		
+
 		if (createExtraContainer()) {
 			gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 			gd.horizontalAlignment = SWT.FILL;
@@ -157,7 +159,7 @@ public abstract class DefaultEditor {
 			gd.grabExcessHorizontalSpace = true;
 			gd.grabExcessVerticalSpace = true;
 			container.setLayoutData(gd);
-			
+
 			gd = new GridData(GridData.VERTICAL_ALIGN_END);
 			gd.horizontalAlignment = SWT.FILL;
 			gd.verticalAlignment = SWT.FILL;
@@ -182,6 +184,9 @@ public abstract class DefaultEditor {
 
 	static {
 		Display display = Display.getCurrent();
+
+		BACKGROUND = new Color(display, 112, 120, 194);
+
 		GRID = new Image(display, 299, 299);
 		GRIDBLACK = new Image(display, 299, 299);
 		GC gc = new GC(GRID);
@@ -221,13 +226,13 @@ public abstract class DefaultEditor {
 
 		ImageData data = temp.getImageData();
 		int color = data.getPixel(0, 0);
-		data.transparentPixel = data.palette
-				.getPixel(data.palette.getRGB(color));
+		data.transparentPixel = data.palette.getPixel(data.palette
+				.getRGB(color));
 		temp.dispose();
-		
+
 		GUIDE = new Image(display, data);
 	}
-	
+
 	protected void drawGrid(GC gc) {
 		Rectangle rect = container.getClientArea();
 		for (int x = rect.x; x <= rect.x + rect.width; x += 299) {
@@ -249,15 +254,18 @@ public abstract class DefaultEditor {
 	protected void drawGuide(GC gc, int x, int y) {
 		gc.drawImage(GUIDE, -150 + x, -150 + y);
 	}
-	
-	static Color COLOR_SEL_BACKGROUND = new Color(Display.getCurrent(), 50, 50, 140);
-	static Color COLOR_SEL_FOREGROUND = new Color(Display.getCurrent(), 20, 20, 100);
-	
-	protected void drawSelection(GC gc, int x, int y, com.maton.tools.stiletto.model.Image img) {
+
+	static Color COLOR_SEL_BACKGROUND = new Color(Display.getCurrent(), 50, 50,
+			140);
+	static Color COLOR_SEL_FOREGROUND = new Color(Display.getCurrent(), 20, 20,
+			100);
+
+	protected void drawSelection(GC gc, int x, int y,
+			com.maton.tools.stiletto.model.Image img) {
 		int w = img.getWidth();
 		int h = img.getHeight();
 		gc.setAlpha(100);
-		
+
 		gc.setBackground(COLOR_SEL_BACKGROUND);
 		gc.fillRectangle(x, y, w, h);
 
@@ -266,9 +274,15 @@ public abstract class DefaultEditor {
 		gc.setForeground(COLOR_SEL_FOREGROUND);
 		gc.drawRectangle(x, y, w, h);
 	}
-	
+
+	protected void fill(GC gc, Control canvas) {
+		gc.setBackground(BACKGROUND);
+		Rectangle bounds = canvas.getBounds();
+		gc.fillRectangle(0, 0, bounds.width, bounds.height);
+	}
+
 	public CTabItem getItem() {
 		return item;
 	}
-	
+
 }

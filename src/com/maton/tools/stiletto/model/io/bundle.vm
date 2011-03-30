@@ -1,0 +1,37 @@
+<Bundle atlasPath="${atlas}">
+  <!-- Fonts -->
+#foreach($font in $bundle.fonts.list)
+  <Font name="${font.name}" fontPath="${font.name}.fnt" />
+#end
+
+  <!-- Sprites -->
+#foreach($sprite in $bundle.sprites.list)
+  <Sprite name="arrowRight1">
+#if($sprite.rendered)
+    <Image name="${sprite.imageName}" x="${sprite.imageX}" y="${sprite.imageY}" />
+#else
+#foreach($component in $sprite.list)
+    <Image name="${component.source.name}" x="${component.x}" y="${component.y}" />
+#end
+#end
+  </Sprite>
+#end
+
+  <!-- Animations -->
+#foreach($animation in $bundle.animations.list)
+  <Animation name="${animation.name}">
+#foreach($frame in $animation.list)
+    <Frame sprite="${frame.source.name}" time="${frame.time}" />
+#end
+  </Animation>
+#end
+
+  <!-- Actors -->
+#foreach($actor in $bundle.actors.list)
+  <Actor name="${actor.name}">
+#foreach($action in $actor.list)
+    <Action name="${action.name}" animation="${action.source.name}" />
+#end
+  </Actor>
+#end
+</Bundle>

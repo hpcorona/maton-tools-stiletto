@@ -27,5 +27,9 @@ public class Action implements IBaseModel {
 	public void setSource(Animation source) {
 		this.source = source;
 	}
+	
+	public Object getSelf() {
+		return this;
+	}
 
 }

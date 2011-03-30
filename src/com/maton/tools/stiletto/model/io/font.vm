@@ -1,0 +1,20 @@
+<font>
+  <info face="${font.name}" size="${font.size}" />
+  <common lineHeight="${font.size}" />
+  <pages>
+    <page id="0" />
+  </pages>
+  <chars>
+#foreach($char in $chars)
+#set($posY = $char.provider.y)
+#if($char.provider.y != 0)
+#set($posY = 0 - $char.provider.y)
+#end
+#set($posX = $char.provider.x)
+#if($char.provider.x != 0)
+#set($posX = 0 - $char.provider.x)
+#end
+    <char id="${char.provider.intChar}" x="${char.outputX}" y="${char.outputY}" width="${char.width}" height="${char.height}" xoffset="$posX" yoffset="$posY" xadvance="${char.provider.xadvance}" />
+#end
+  </chars>
+</font>

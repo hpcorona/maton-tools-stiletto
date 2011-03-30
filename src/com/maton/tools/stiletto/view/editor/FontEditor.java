@@ -55,7 +55,7 @@ public class FontEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	protected Control createControl(Composite parent) {
-		canvas = new Canvas(parent, SWT.BORDER);
+		canvas = new Canvas(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 
 		canvas.addMouseMoveListener(this);
 		canvas.addMouseListener(this);
@@ -100,31 +100,33 @@ public class FontEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	public void refreshGraphics() {
-		container.redraw();
+		canvas.setRedraw(true);
+		canvas.redraw();
 	}
 
 	protected void paint(Event e) {
-		e.gc.setAdvanced(true);
-		e.gc.setAntialias(SWT.ON);
+		fill(e.gc, canvas);
 
 		if (showGrid) {
 			drawGrid(e.gc);
-		} else {
-			drawGridBlack(e.gc);
 		}
 
 		if (showGuide) {
 			drawGuide(e.gc, xOffset, yOffset);
 		}
 
+		if (tracker.isActive()) {
+			return;
+		}
+		
 		int maxw = canvas.getBounds().width - 100;
 		CharMetric cm = new CharMetric();
 		int x = 0;
 		int y = 0;
 		int max = 0;
 		for (int i = 0; i < font.getCharacters().length(); i++) {
-			font.draw(e.gc, xOffset + x, yOffset + y, font.getCharacters()
-					.charAt(i), cm);
+			cm.letter = font.getCharacters().charAt(i);
+			font.draw(e.gc, xOffset + x, yOffset + y, cm);
 			x += cm.xadvance + 20;
 			
 			max = Math.max(cm.height, max);
@@ -169,6 +171,7 @@ public class FontEditor extends DefaultEditor implements IGraphicsEditor,
 	@Override
 	public void mouseUp(MouseEvent e) {
 		tracker.mouseUp();
+		refreshGraphics();
 	}
 
 	@Override

@@ -33,5 +33,10 @@ public class MouseTracker {
 	public void mouseUp() {
 		active = false;
 	}
+
+
+	public boolean isActive() {
+		return active;
+	}
 	
 }

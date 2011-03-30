@@ -8,7 +8,7 @@
 	<property name="build.dir" value="build" />
 	<property name="lib.dir" value="lib" />
 	<property name="jar.file" value="${build.dir}/stiletto.jar" />
-	<property name="class.path" value="org.eclipse.core.commands_3.6.0.I20100512-1500.jar org.eclipse.equinox.common_3.6.0.v20100503.jar org.eclipse.jface_3.6.2.M20110210-1200.jar org.eclipse.jface.databinding_1.4.0.I20100601-0800.jar org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar org.eclipse.osgi_3.6.2.R36x_v20110210.jar org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar velocity-1.7-dep.jar velocity-1.7.jar swt-gtkx86.jar swt-osx32.jar swt-osx64.jar swt-win32.jar" />
+	<property name="class.path" value="org.eclipse.core.commands_3.6.0.I20100512-1500.jar org.eclipse.equinox.common_3.6.0.v20100503.jar org.eclipse.jface_3.6.2.M20110210-1200.jar org.eclipse.jface.databinding_1.4.0.I20100601-0800.jar org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar org.eclipse.osgi_3.6.2.R36x_v20110210.jar org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar velocity-1.7-dep.jar velocity-1.7.jar swt-gtkx86.jar swt-osx32.jar swt-osx64.jar swt-win32.jar nanoxml-lite-2.2.3.jar" />
 
 	<property name="main.class" value="com.maton.tools.stiletto.Main" />
 
@@ -59,7 +59,7 @@
 		</delete>
 	</target>
 
-	<target name="osx64">
+	<target name="osx64" depends="jar">
 		<mkdir dir="${osx64.dir}" />
 		<copy todir="${osx64.dir}" verbose="true">
 			<fileset refid="libs" />
@@ -75,28 +75,26 @@
 		<delete dir="${osx64.dir}" excludes="${app.name}.app/**" />
 	</target>
 
-	<target name="win32">
+	<target name="win32" depends="jar">
 		<mkdir dir="${win32.dir}" />
 		<copy todir="${win32.dir}" verbose="true">
 			<fileset refid="libs" />
 		</copy>
 		<copy file="${win32.swt}" todir="${win32.dir}" />
 		<copy file="${jar.file}" todir="${win32.dir}" />
-		<!-- -XstartOnFirstThread -->
-		<echo file="${win32.dir}/run.bat">javaw -XstartOnFirstThread -jar stiletto.jar</echo>
+		<echo file="${win32.dir}/run.bat">javaw -jar stiletto.jar</echo>
 		<zip destfile="${win32.dir}/Stiletto.zip" basedir="${win32.dir}" />
 		<delete dir="${win32.dir}" excludes="Stiletto.zip" />
 	</target>
 
-	<target name="gtk32">
+	<target name="gtk32" depends="jar">
 		<mkdir dir="${gtk32.dir}" />
 		<copy todir="${gtk32.dir}" verbose="true">
 			<fileset refid="libs" />
 		</copy>
 		<copy file="${gtk32.swt}" todir="${gtk32.dir}" />
 		<copy file="${jar.file}" todir="${gtk32.dir}" />
-		<!-- -XstartOnFirstThread -->
-		<echo file="${gtk32.dir}/run.sh">javaw -XstartOnFirstThread -jar stiletto.jar</echo>
+		<echo file="${gtk32.dir}/run.sh">javaw -jar stiletto.jar</echo>
 		<tar destfile="${gtk32.dir}/Stiletto.tar" basedir="${gtk32.dir}" />
 		<gzip destfile="${gtk32.dir}/Stiletto.tar.gz" src="${gtk32.dir}/Stiletto.tar" />
 		<delete dir="${gtk32.dir}" excludes="Stiletto.tar.gz" />

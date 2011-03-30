@@ -87,5 +87,9 @@ public abstract class BaseContainer<T, V> extends ModelEventProvider {
 	public List<T> getList() {
 		return Collections.unmodifiableList(childs);
 	}
+	
+	public Object getSelf() {
+		return this;
+	}
 
 }

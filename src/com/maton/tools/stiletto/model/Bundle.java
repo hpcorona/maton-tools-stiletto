@@ -90,4 +90,14 @@ public class Bundle {
 		images.clear();
 	}
 
+	public BundleContext getCtx() {
+		return ctx;
+	}
+
+	public String getName() {
+		String name = file.getName();
+		int idx = name.lastIndexOf(".");
+		return name.substring(0, idx);
+	}
+
 }

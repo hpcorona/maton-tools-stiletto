@@ -14,6 +14,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.swt.graphics.GC;
@@ -248,7 +250,7 @@ public class Font implements IBaseModel {
 	protected java.awt.Font font;
 	protected FontRenderContext context;
 
-	protected void regenFont(Graphics2D g) {
+	public void regenFont(Graphics2D g) {
 		if (font != null) {
 			font = null;
 		}
@@ -267,7 +269,7 @@ public class Font implements IBaseModel {
 		font = new java.awt.Font(face, fontHints, size);
 	}
 
-	public void draw(GC gc, int x, int y, char c, CharMetric metric) {
+	public void draw(GC gc, int x, int y, CharMetric metric) {
 		BufferedImage buff = new BufferedImage(size * 2, size * 2,
 				BufferedImage.TYPE_4BYTE_ABGR_PRE);
 		Graphics2D g = buff.createGraphics();
@@ -276,9 +278,9 @@ public class Font implements IBaseModel {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		regenFont(g);
-		calcMetrics(g, c, metric);
+		calcMetrics(g, metric);
 		adjust(metric);
-		renderChar(g, c, 0, 0, metric);
+		renderChar(g, 0, 0, metric);
 		g.dispose();
 
 		ImageData data = SwingTools.convertToSWT(buff);
@@ -299,7 +301,8 @@ public class Font implements IBaseModel {
 		}
 	}
 
-	public void calcMetrics(Graphics2D g, char letra, CharMetric metric) {
+	public void calcMetrics(Graphics2D g, CharMetric metric) {
+		char letra = metric.letter;
 		AttributedString as = new AttributedString("" + letra);
 		as.addAttribute(TextAttribute.FONT, font);
 
@@ -357,8 +360,9 @@ public class Font implements IBaseModel {
 		metric.xadvance = (int) tl.getAdvance();
 	}
 
-	public void renderChar(Graphics2D g, char letra, int x, int y,
+	public void renderChar(Graphics2D g, int x, int y,
 			CharMetric metric) {
+		char letra = metric.letter;
 		AttributedString as = new AttributedString("" + letra);
 		as.addAttribute(TextAttribute.FONT, font);
 
@@ -464,5 +468,32 @@ public class Font implements IBaseModel {
 			int c = Integer.parseInt(tok.nextToken());
 			characters += "" + ((char) c);
 		}
+	}
+
+	public Object getSelf() {
+		return this;
+	}
+	
+	public List<CharMetric> getCharMetrics() {
+		ArrayList<CharMetric> chars = new ArrayList<CharMetric>();
+		
+		BufferedImage buff = new BufferedImage(size * 2, size * 2,
+				BufferedImage.TYPE_4BYTE_ABGR_PRE);
+		Graphics2D g = buff.createGraphics();
+		regenFont(g);
+		
+		for (int i = 0; i < characters.length(); i++) {
+			CharMetric metric = new CharMetric();
+			metric.letter = characters.charAt(i);
+			calcMetrics(g, metric);
+			adjust(metric);
+			
+			chars.add(metric);
+		}
+		
+		g.dispose();
+		buff.flush();
+		
+		return chars;
 	}
 }

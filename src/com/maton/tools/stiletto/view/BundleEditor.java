@@ -1,7 +1,9 @@
 package com.maton.tools.stiletto.view;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -13,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ExpandBar;
 
 import com.maton.tools.stiletto.model.Bundle;
+import com.maton.tools.stiletto.process.BundleBuilder;
 import com.maton.tools.stiletto.view.outline.ActorsOutline;
 import com.maton.tools.stiletto.view.outline.AnimationsOutline;
 import com.maton.tools.stiletto.view.outline.FontsOutline;
@@ -118,7 +121,17 @@ public class BundleEditor {
 	}
 
 	public void buildBundle() {
-		bundle.build();
+
+		ProgressMonitorDialog pmd = new ProgressMonitorDialog(
+				container.getShell());
+		try {
+			pmd.run(true, false, new BundleBuilder(bundle));
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public Bundle getBundle() {

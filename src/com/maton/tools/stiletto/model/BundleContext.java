@@ -1,6 +1,9 @@
 package com.maton.tools.stiletto.model;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
@@ -51,6 +54,14 @@ public class BundleContext {
 		fileName += BUILD_PATH + File.separator + name;
 		
 		return fileName;
+	}
+
+	public java.awt.Image loadAwtImage(String name) {
+		try {
+			return ImageIO.read(new File(getImagePath(name)));
+		} catch (IOException e) {
+			return null;
+		}
 	}
 	
 }
