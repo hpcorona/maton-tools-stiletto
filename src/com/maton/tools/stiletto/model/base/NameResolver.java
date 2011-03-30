@@ -19,14 +19,14 @@ public class NameResolver {
 		
 		String name = model.getName();
 		int idx = 1;
-		String newName = null;
+		String newName = name;
 		
-		while (tryName(name) == false) {
+		while (tryName(newName) == false) {
 			newName = name + suffix + idx;
 			idx++;
 		}
 		
-		if (newName != null) {
+		if (newName != null && !name.equals(newName)) {
 			name = newName;
 			model.setName(newName);
 		}

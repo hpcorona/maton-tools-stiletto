@@ -27,6 +27,7 @@ public class BuildAction extends Action {
 		if (editor == null)
 			return;
 
+		editor.save();
 		editor.buildBundle();
 	}
 }

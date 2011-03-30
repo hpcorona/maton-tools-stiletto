@@ -91,5 +91,11 @@ public abstract class BaseContainer<T, V> extends ModelEventProvider {
 	public Object getSelf() {
 		return this;
 	}
+	
+	public void notifyAllChange() {
+		for (T item : childs) {
+			notifyChange(item);
+		}
+	}
 
 }

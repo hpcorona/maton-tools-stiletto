@@ -52,4 +52,14 @@ public abstract class BasePool<T extends IBaseModel> extends ModelEventProvider 
 		return null;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public void notifyAllChange() {
+		for (T item : elements) {
+			if (item instanceof BaseContainer) {
+				((BaseContainer)item).notifyAllChange();
+			}
+			notifyChange(item);
+		}
+	}
+	
 }

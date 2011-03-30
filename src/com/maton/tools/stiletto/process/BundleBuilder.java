@@ -112,9 +112,6 @@ public class BundleBuilder implements IRunnableWithProgress {
 	public void startup() {
 		monitor.beginTask("Preparing resources", 10);
 
-		monitor.subTask("Bundle verification in progress...");
-		ModelOutput.verifyBundle(bundle);
-
 		monitor.subTask("Preparing subtextures...");
 		List<IImageProvider> used = ModelOutput.getUsedImages(bundle);
 		for (IImageProvider img : used) {

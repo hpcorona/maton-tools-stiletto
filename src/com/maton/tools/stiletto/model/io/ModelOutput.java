@@ -93,9 +93,17 @@ public class ModelOutput {
 		}
 
 		verifyList(exported);
+		
+		bundle.getImages().notifyAllChange();
+		bundle.getSprites().notifyAllChange();
+		bundle.getAnimations().notifyAllChange();
+		bundle.getActors().notifyAllChange();
+		bundle.getFonts().notifyAllChange();
 	}
 
 	public static boolean save(Bundle bundle) {
+		verifyBundle(bundle);
+		
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty("resource.loader", "mine");
 		ve.setProperty("mine.resource.loader.instance",
@@ -128,7 +136,7 @@ public class ModelOutput {
 				return false;
 			}
 		}
-
+		
 		return true;
 	}
 
