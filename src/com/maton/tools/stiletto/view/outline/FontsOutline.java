@@ -1,5 +1,6 @@
 package com.maton.tools.stiletto.view.outline;
 
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -10,8 +11,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.TableItem;
 
+import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.FontPool;
 import com.maton.tools.stiletto.view.BundleContainer;
+import com.maton.tools.stiletto.view.action.DeleteAction;
 import com.maton.tools.stiletto.view.action.NewFontAction;
 import com.maton.tools.stiletto.view.table.DefaultTable;
 import com.maton.tools.stiletto.view.table.FontsTable;
@@ -54,6 +57,11 @@ public class FontsOutline extends DefaultOutline {
 				doubleClick(e);
 			}
 		});
+
+		toolbar.add(new Separator());
+		toolbar.add(new DeleteAction<Font>(parent.getShell(), BundleContainer
+				.getInstance().getCurrent().getBundle(), table));
+		toolbar.update(true);
 
 		return table.getTable();
 	}

@@ -184,15 +184,6 @@ public class FrameTable extends DefaultTable<Frame> {
 		}
 
 	}
-
-	public Frame getSelected() {
-		if (table.getSelectionCount() == 0) {
-			return null;
-		}
-
-		return (Frame) table.getSelection()[0].getData();
-	}
-
 	public Animation getAnimation() {
 		return animation;
 	}

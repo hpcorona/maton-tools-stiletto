@@ -48,22 +48,9 @@ public class BundleEditor {
 		bundle = new Bundle(parent.getDisplay(), file);
 
 		item = new CTabItem(parent, SWT.CLOSE);
-
-		build();
-
-		item.setControl(container);
-		item.setImage(icon.createImage());
-
-		if (file == null) {
-			item.setText("untitled");
-			item.setToolTipText("New bundle");
-		} else {
-			item.setText(file.getName());
-			item.setToolTipText(file.getAbsolutePath());
-		}
 	}
-
-	protected void build() {
+	
+	public void build() {
 		container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginBottom = 0;
@@ -101,6 +88,18 @@ public class BundleEditor {
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;
 		editors.getContainer().setLayoutData(gd);
+
+		// Setup
+		item.setControl(container);
+		item.setImage(icon.createImage());
+
+		if (file == null) {
+			item.setText("untitled");
+			item.setToolTipText("New bundle");
+		} else {
+			item.setText(file.getName());
+			item.setToolTipText(file.getAbsolutePath());
+		}
 	}
 
 	public CTabItem getItem() {

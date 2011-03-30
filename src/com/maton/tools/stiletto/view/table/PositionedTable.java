@@ -229,16 +229,6 @@ public class PositionedTable extends
 
 	}
 
-	@SuppressWarnings("unchecked")
-	public Positioned<com.maton.tools.stiletto.model.Image> getSelected() {
-		if (table.getSelectionCount() == 0) {
-			return null;
-		}
-
-		return (Positioned<com.maton.tools.stiletto.model.Image>) table
-				.getSelection()[0].getData();
-	}
-
 	public Sprite getSprite() {
 		return sprite;
 	}

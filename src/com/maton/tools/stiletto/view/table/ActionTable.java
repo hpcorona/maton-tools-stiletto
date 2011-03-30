@@ -178,14 +178,6 @@ public class ActionTable extends DefaultTable<Action> {
 
 	}
 
-	public Action getSelected() {
-		if (table.getSelectionCount() == 0) {
-			return null;
-		}
-
-		return (Action) table.getSelection()[0].getData();
-	}
-
 	public Actor getActor() {
 		return actor;
 	}

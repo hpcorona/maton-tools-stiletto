@@ -11,8 +11,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.TableItem;
 
+import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.ImagePool;
 import com.maton.tools.stiletto.view.BundleContainer;
+import com.maton.tools.stiletto.view.action.DeleteAction;
 import com.maton.tools.stiletto.view.action.ImportAction;
 import com.maton.tools.stiletto.view.action.RefreshPoolAction;
 import com.maton.tools.stiletto.view.table.DefaultTable;
@@ -56,6 +58,11 @@ public class ImagesOutline extends DefaultOutline {
 				doubleClick(e);
 			}
 		});
+
+		toolbar.add(new Separator());
+		toolbar.add(new DeleteAction<Image>(parent.getShell(), BundleContainer
+				.getInstance().getCurrent().getBundle(), table));
+		toolbar.update(true);
 
 		return table.getTable();
 	}

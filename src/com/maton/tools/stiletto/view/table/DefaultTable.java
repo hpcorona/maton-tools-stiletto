@@ -192,5 +192,14 @@ public abstract class DefaultTable<T> extends LabelProvider implements
 	public TableViewer getViewer() {
 		return viewer;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public T getSelected() {
+		if (table.getSelectionCount() == 0) {
+			return null;
+		}
+
+		return (T)table.getSelection()[0].getData();
+	}
 
 }
