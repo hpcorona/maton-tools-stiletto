@@ -34,6 +34,7 @@ public class BundleBuilder implements IRunnableWithProgress {
 	protected String pngFile;
 	protected String bundleFile;
 	protected String atlasFile;
+	protected String cssFile;
 
 	public BundleBuilder(Bundle bundle) {
 		this.bundle = bundle;
@@ -46,6 +47,7 @@ public class BundleBuilder implements IRunnableWithProgress {
 			InterruptedException {
 		this.monitor = monitor;
 
+		cssFile = bundle.getName() + ".css";
 		pngFile = bundle.getName() + ".png";
 		bundleFile = bundle.getName() + ".xml";
 		atlasFile = bundle.getName() + "_atlas.xml";
@@ -63,6 +65,9 @@ public class BundleBuilder implements IRunnableWithProgress {
 		
 		monitor.subTask("Writing Texture Atlas...");
 		ModelOutput.saveAtlas(new File(bundle.getCtx().getBuildPath(atlasFile)), pngFile, parts);
+		
+		monitor.subTask("Writing CSS Sprites...");
+		ModelOutput.saveCss(new File(bundle.getCtx().getBuildPath(cssFile)), bundle.getName(), pngFile, parts);
 		
 		for (Font font : bundle.getFonts().getList()) {
 			monitor.subTask("Writing Font " + font.getName() + "...");

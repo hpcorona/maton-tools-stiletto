@@ -253,7 +253,7 @@ public class ActorEditor extends DefaultEditor implements IGraphicsEditor,
 		}
 
 		if (current != null) {
-			current.getSource().draw(e.gc, xOffset, yOffset, 0, 255);
+			current.getSource().draw(e.gc, xOffset, yOffset, 0, 0, 0, 255, false, false);
 		}
 	}
 

@@ -16,11 +16,11 @@ import org.apache.velocity.app.VelocityEngine;
 import com.maton.tools.stiletto.model.Bundle;
 import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.Image;
+import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.base.IBaseModel;
 import com.maton.tools.stiletto.model.base.IImageProvider;
 import com.maton.tools.stiletto.model.base.NameResolver;
-import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.process.base.ImagePart;
 
 public class ModelOutput {
@@ -40,8 +40,8 @@ public class ModelOutput {
 			if (spr.isRendered()) {
 				used.add(spr);
 			} else {
-				List<Positioned<Image>> childs = spr.getList();
-				for (Positioned<Image> img : childs) {
+				List<Positioned> childs = spr.getList();
+				for (Positioned img : childs) {
 					if (used.indexOf(img.getSource()) < 0) {
 						used.add(img.getSource());
 					}
@@ -85,8 +85,8 @@ public class ModelOutput {
 			if (spr.isRendered()) {
 				exported.add(new SpriteImageProxy(spr));
 			} else {
-				List<Positioned<Image>> childs = spr.getList();
-				for (Positioned<Image> img : childs) {
+				List<Positioned> childs = spr.getList();
+				for (Positioned img : childs) {
 					exported.add(new ImageProxy(img.getSource()));
 				}
 			}
@@ -177,7 +177,46 @@ public class ModelOutput {
 
 		return true;
 	}
-	
+
+	public static boolean saveCss(File cssFile, String bundle, String pngFile, ArrayList<ImagePart> parts) {
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty("resource.loader", "mine");
+		ve.setProperty("mine.resource.loader.instance",
+				new InternalResourceLoader());
+
+		VelocityContext ctx = new VelocityContext();
+		ctx.put("bundle", bundle);
+		ctx.put("image", pngFile);
+		ctx.put("parts", parts);
+
+		Template tpl = ve.getTemplate("css.vm");
+
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(cssFile);
+			OutputStreamWriter osw = new OutputStreamWriter(out);
+
+			tpl.merge(ctx, osw);
+
+			osw.flush();
+		} catch (FileNotFoundException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			try {
+				if (out != null) {
+					out.flush();
+					out.close();
+				}
+			} catch (IOException e) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public static boolean saveFont(File fontFile, Font font, ArrayList<ImagePart> parts) {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty("resource.loader", "mine");

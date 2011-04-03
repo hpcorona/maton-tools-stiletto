@@ -11,7 +11,7 @@
     <Image name="${sprite.imageName}" x="${sprite.imageX}" y="${sprite.imageY}" />
 #else
 #foreach($component in $sprite.list)
-    <Image name="${component.source.name}" x="${component.x}" y="${component.y}" />
+    <Image name="${component.source.exportName}" x="${component.x}" y="${component.y}" alpha="${component.alpha}" rotation="${component.rotation}" flipX="${component.flipX}" flipY="${component.flipY}" />
 #end
 #end
   </Sprite>

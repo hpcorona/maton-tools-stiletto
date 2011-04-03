@@ -1,0 +1,16 @@
+/* CSS Sprites ${bundle} */
+.${bundle} {
+	background-image: url("${image}");
+}
+
+/* Individual Sprites */
+#foreach($part in $parts)
+#set($x = 0 - ${part.outputX})
+#set($y = 0 - ${part.outputY})
+.${bundle}.${part.name} {
+	background-position: ${x}px ${y}px;
+	width: ${part.width};
+	height: ${part.height};
+}
+
+#end

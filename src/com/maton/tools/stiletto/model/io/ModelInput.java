@@ -17,8 +17,8 @@ import com.maton.tools.stiletto.model.Bundle;
 import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.Frame;
 import com.maton.tools.stiletto.model.Image;
+import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
-import com.maton.tools.stiletto.model.base.Positioned;
 
 public class ModelInput {
 	public static boolean load(Bundle bundle) {
@@ -114,14 +114,18 @@ public class ModelInput {
 				int y = module.getIntAttribute("y");
 				int alpha = module.getIntAttribute("alpha");
 				float rotation = (float) module.getDoubleAttribute("rotation");
+				boolean flipX = module.getBooleanAttribute("flipX", "true", "false", false);
+				boolean flipY = module.getBooleanAttribute("flipY", "true", "false", false);
 
 				Image img = bundle.getImages().getElement(name);
 
-				Positioned<Image> pos = spr.addChild(img);
+				Positioned pos = spr.addChild(img);
 				pos.setX(x);
 				pos.setY(y);
 				pos.setAlpha(alpha);
 				pos.setRotation(rotation);
+				pos.setFlipX(flipX);
+				pos.setFlipY(flipY);
 			}
 		}
 	}

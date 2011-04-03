@@ -110,10 +110,10 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 			drawGuide(e.gc, xOffset, yOffset);
 		}
 
-		image.draw(e.gc, xOffset, yOffset, 0, 255);
+		image.draw(e.gc, xOffset, yOffset, 0, 0, 0, 255, false, false);
 		
 		if (showSelection) {
-			drawSelection(e.gc, xOffset, yOffset, image);
+			drawSelection(e.gc, xOffset, yOffset, image.getBounds());
 		}
 	}
 

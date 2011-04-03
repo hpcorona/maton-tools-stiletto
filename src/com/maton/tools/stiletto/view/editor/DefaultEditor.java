@@ -261,9 +261,9 @@ public abstract class DefaultEditor {
 			100);
 
 	protected void drawSelection(GC gc, int x, int y,
-			com.maton.tools.stiletto.model.Image img) {
-		int w = img.getWidth();
-		int h = img.getHeight();
+			Rectangle rect) {
+		int w = rect.width;
+		int h = rect.height;
 		gc.setAlpha(100);
 
 		gc.setBackground(COLOR_SEL_BACKGROUND);

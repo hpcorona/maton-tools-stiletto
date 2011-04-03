@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.swt.graphics.Device;
 
 import com.maton.tools.stiletto.model.base.IBaseModel;
-import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.model.io.ModelInput;
 import com.maton.tools.stiletto.model.io.ModelOutput;
 
@@ -126,7 +125,7 @@ public class Bundle {
 		for (Sprite spr : sprites.getList()) {
 			boolean hasIt = false;
 
-			for (Positioned<Image> pos : spr.getList()) {
+			for (Positioned pos : spr.getList()) {
 				if (pos.getSource() == image) {
 					hasIt = true;
 					break;
@@ -213,10 +212,10 @@ public class Bundle {
 
 	public void remove(Image image) {
 		for (Sprite spr : sprites.getList()) {
-			List<Positioned<Image>> list = spr.getList();
+			List<Positioned> list = spr.getList();
 
 			for (int i = list.size() - 1; i >= 0; i--) {
-				Positioned<Image> pos = list.get(i);
+				Positioned pos = list.get(i);
 
 				if (pos.getSource() == image) {
 					spr.removeChild(i);

@@ -9,6 +9,10 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -16,9 +20,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import com.maton.tools.stiletto.model.Image;
+import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.base.IModelListener;
-import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.view.dnd.IDropReceiver;
 import com.maton.tools.stiletto.view.dnd.TargetTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
@@ -28,6 +32,7 @@ import com.maton.tools.stiletto.view.editor.action.ShowGridAction;
 import com.maton.tools.stiletto.view.editor.action.ShowGuideAction;
 import com.maton.tools.stiletto.view.editor.action.ShowSelectionAction;
 import com.maton.tools.stiletto.view.editor.action.ToolAction;
+import com.maton.tools.stiletto.view.form.PositionedForm;
 import com.maton.tools.stiletto.view.table.DefaultTable;
 import com.maton.tools.stiletto.view.table.PositionedTable;
 
@@ -48,6 +53,7 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 	protected ToolAction panTool;
 	protected ToolAction moveTool;
 	protected ToolType tool;
+	protected PositionedForm form;
 
 	public SpriteEditor(CTabFolder parent, Sprite sprite) {
 		super(parent);
@@ -64,6 +70,7 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 
 	public void dispose() {
 		sprite.removeModelListener(this);
+		form.dispose();
 	}
 	
 	public Object getData() {
@@ -95,7 +102,7 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 			@Override
 			public void drop(Control source, Object data, int idx) {
 				if (data instanceof Image) {
-					Positioned<Image> img = sprite.addChild((Image) data);
+					Positioned img = sprite.addChild((Image) data);
 					table.getViewer().getTable().setSelection(sprite.indexOf(img));
 					
 					refreshGraphics();
@@ -129,7 +136,10 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 
 	@Override
 	protected Control createExtraControl(Composite parent) {
-		table = new PositionedTable(parent, DefaultTable.DEFAULT_TABLE_STYLE,
+		Composite rowComp = new Composite(parent, SWT.NONE);
+		rowComp.setLayout(new RowLayout());
+		
+		table = new PositionedTable(rowComp, DefaultTable.DEFAULT_TABLE_STYLE,
 				sprite);
 
 		extraToolbar.add(new DeleteImageAction(table, sprite));
@@ -146,11 +156,41 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 			@Override
 			public void handleEvent(Event event) {
 				current = table.getSelected();
+				form.setCurrent(current);
 				refreshGraphics();
 			}
 		});
+		
+		form = new PositionedForm(rowComp, sprite);
+		
+		
+		GridLayout layout = new GridLayout();
+		layout.marginBottom = 0;
+		layout.marginHeight = 0;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+		layout.marginWidth = 0;
+		layout.verticalSpacing = 0;
+		layout.horizontalSpacing = 0;
+		rowComp.setLayout(layout);
 
-		return table.getTable();
+		GridData gd = null;
+		
+		gd = new GridData();
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessVerticalSpace = true;
+		gd.horizontalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		table.getTable().setLayoutData(gd);
+
+		gd = new GridData();
+		gd.horizontalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.heightHint = 150;
+		form.getContainer().setLayoutData(gd);
+
+		return rowComp;
 	}
 
 	@Override
@@ -193,11 +233,12 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 			drawGuide(e.gc, xOffset, yOffset);
 		}
 
-		sprite.draw(e.gc, xOffset, yOffset, 0, 255);
+		sprite.draw(e.gc, xOffset, yOffset, 0, 0, 0, 255, false, false);
 		
 		if (showSelection) {
 			if (current != null) {
-				drawSelection(e.gc, xOffset + current.getX(), yOffset + current.getY(), current.getSource());
+				Rectangle rect = current.getBounds();
+				drawSelection(e.gc, xOffset + current.getX(), yOffset + current.getY(), rect);
 			}
 		}
 	}
@@ -241,7 +282,7 @@ public class SpriteEditor extends DefaultEditor implements IGraphicsEditor,
 	public void mouseDoubleClick(MouseEvent e) {
 	}
 
-	Positioned<Image> current = null;
+	Positioned current = null;
 
 	@Override
 	public void mouseDown(MouseEvent e) {

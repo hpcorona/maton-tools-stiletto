@@ -16,7 +16,7 @@ public class Animation extends BaseContainer<Frame, Sprite> implements IBaseMode
 
 	public void draw(GC g, int x, int y, float rotation, int alpha, int frameIdx) {
 		Frame frame = childs.get(frameIdx);
-		frame.getSource().draw(g, x, y, rotation, alpha);
+		frame.getSource().draw(g, x, y, 0, 0, rotation, alpha, false, false);
 	}
 
 	public String getName() {

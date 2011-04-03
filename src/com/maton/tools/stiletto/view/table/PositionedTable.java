@@ -12,16 +12,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
+import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
-import com.maton.tools.stiletto.model.base.Positioned;
 import com.maton.tools.stiletto.view.dnd.IDragProvider;
 import com.maton.tools.stiletto.view.dnd.IDropReceiver;
 import com.maton.tools.stiletto.view.dnd.SourceTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TargetTransferDefault;
 import com.maton.tools.stiletto.view.dnd.TransferType;
 
-public class PositionedTable extends
-		DefaultTable<Positioned<com.maton.tools.stiletto.model.Image>> {
+public class PositionedTable extends DefaultTable<Positioned> {
 
 	protected Sprite sprite;
 
@@ -46,14 +45,13 @@ public class PositionedTable extends
 
 		new SourceTransferDefault(table, TransferType.POSITIONEDIMG, true,
 				new IDragProvider() {
-					Positioned<com.maton.tools.stiletto.model.Image> image;
+					Positioned image;
 
 					@Override
 					public Object drag() {
 						return image;
 					}
 
-					@SuppressWarnings("unchecked")
 					@Override
 					public boolean canDrag() {
 						if (table.getSelectionCount() == 0) {
@@ -62,8 +60,7 @@ public class PositionedTable extends
 						}
 
 						TableItem[] items = table.getSelection();
-						image = (Positioned<com.maton.tools.stiletto.model.Image>) items[0]
-								.getData();
+						image = (Positioned) items[0].getData();
 
 						return image != null;
 					}
@@ -71,11 +68,9 @@ public class PositionedTable extends
 
 		new TargetTransferDefault(table, new Transfer[] { TransferType.IMAGE,
 				TransferType.POSITIONEDIMG }, new IDropReceiver() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public void move(Object data, int idx1) {
-				int idx0 = sprite
-						.indexOf((Positioned<com.maton.tools.stiletto.model.Image>) data);
+				int idx0 = sprite.indexOf((Positioned) data);
 
 				sprite.moveChild(idx0, idx1);
 				table.setSelection(idx1);
@@ -87,8 +82,7 @@ public class PositionedTable extends
 					com.maton.tools.stiletto.model.Image img = (com.maton.tools.stiletto.model.Image) data;
 
 					if (idx < 0) {
-						Positioned<com.maton.tools.stiletto.model.Image> pos = sprite
-								.addChild(img);
+						Positioned pos = sprite.addChild(img);
 						table.select(sprite.indexOf(pos));
 					} else {
 						sprite.addChild(img, idx);
@@ -112,7 +106,7 @@ public class PositionedTable extends
 	}
 
 	@Override
-	protected DefaultColumn<Positioned<com.maton.tools.stiletto.model.Image>>[] getColumns() {
+	protected DefaultColumn<Positioned>[] getColumns() {
 		return new BaseColumn[] { new ImageColumn(), new XColumn(),
 				new YColumn() };
 	}
@@ -124,8 +118,7 @@ public class PositionedTable extends
 				"image.png").createImage();
 	}
 
-	abstract class BaseColumn extends
-			DefaultColumn<Positioned<com.maton.tools.stiletto.model.Image>> {
+	abstract class BaseColumn extends DefaultColumn<Positioned> {
 		public BaseColumn(String property, String title, int width, int style,
 				boolean editable, CellEditor editor) {
 			super(property, title, width, style, editable, editor);
@@ -139,27 +132,22 @@ public class PositionedTable extends
 		}
 
 		@Override
-		public Object getValue(
-				Positioned<com.maton.tools.stiletto.model.Image> element) {
+		public Object getValue(Positioned element) {
 			return element.getSource();
 		}
 
 		@Override
-		public String getText(
-				Positioned<com.maton.tools.stiletto.model.Image> element) {
+		public String getText(Positioned element) {
 			return element.getSource().getName();
 		}
 
 		@Override
-		public void modify(
-				Positioned<com.maton.tools.stiletto.model.Image> element,
-				Object value) {
+		public void modify(Positioned element, Object value) {
 			element.setSource((com.maton.tools.stiletto.model.Image) value);
 		}
 
 		@Override
-		public Image getImage(
-				Positioned<com.maton.tools.stiletto.model.Image> element) {
+		public Image getImage(Positioned element) {
 			return IMAGE;
 		}
 
@@ -172,21 +160,17 @@ public class PositionedTable extends
 		}
 
 		@Override
-		public Object getValue(
-				Positioned<com.maton.tools.stiletto.model.Image> element) {
+		public Object getValue(Positioned element) {
 			return String.valueOf(element.getX());
 		}
 
 		@Override
-		public String getText(
-				Positioned<com.maton.tools.stiletto.model.Image> element) {
+		public String getText(Positioned element) {
 			return String.valueOf(element.getX());
 		}
 
 		@Override
-		public void modify(
-				Positioned<com.maton.tools.stiletto.model.Image> element,
-				Object value) {
+		public void modify(Positioned element, Object value) {
 			try {
 				int x = Integer.parseInt((String) value);
 				element.setX(x);
@@ -204,21 +188,17 @@ public class PositionedTable extends
 		}
 
 		@Override
-		public Object getValue(
-				Positioned<com.maton.tools.stiletto.model.Image> element) {
+		public Object getValue(Positioned element) {
 			return String.valueOf(element.getY());
 		}
 
 		@Override
-		public String getText(
-				Positioned<com.maton.tools.stiletto.model.Image> element) {
+		public String getText(Positioned element) {
 			return String.valueOf(element.getY());
 		}
 
 		@Override
-		public void modify(
-				Positioned<com.maton.tools.stiletto.model.Image> element,
-				Object value) {
+		public void modify(Positioned element, Object value) {
 			try {
 				int y = Integer.parseInt((String) value);
 				element.setY(y);

@@ -10,7 +10,7 @@
 #foreach($sprite in $sprites)
     <sprite name="${sprite.name}" rendered="${sprite.rendered}" image="${sprite.imageName}">
 #foreach($component in $sprite.list)
-      <module name="${component.source.name}" x="${component.x}" y="${component.y}" alpha="${component.alpha}" rotation="${component.rotation}" />
+      <module name="${component.source.name}" x="${component.x}" y="${component.y}" alpha="${component.alpha}" rotation="${component.rotation}" flipX="${component.flipX}" flipY="${component.flipY}" />
 #end
 	</sprite>
 #end

@@ -1,17 +1,23 @@
 package com.maton.tools.stiletto.model;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
+import com.maton.tools.stiletto.graphics.DrawTools;
 import com.maton.tools.stiletto.model.base.BaseContainer;
 import com.maton.tools.stiletto.model.base.Drawable;
 import com.maton.tools.stiletto.model.base.IBaseModel;
 import com.maton.tools.stiletto.model.base.IImageProvider;
-import com.maton.tools.stiletto.model.base.Positioned;
 
-public class Sprite extends BaseContainer<Positioned<Image>, Image> implements
+public class Sprite extends BaseContainer<Positioned, Image> implements
 		Drawable, IBaseModel, IImageProvider {
 
 	private String name;
@@ -30,9 +36,10 @@ public class Sprite extends BaseContainer<Positioned<Image>, Image> implements
 	}
 
 	@Override
-	public void draw(GC g, int x, int y, float rotation, int alpha) {
-		for (Positioned<Image> img : childs) {
-			img.draw(g, x, y, rotation, alpha);
+	public void draw(GC g, int x, int y, int ox, int oy, float rotation,
+			int alpha, boolean flipX, boolean flipY) {
+		for (Positioned img : childs) {
+			img.draw(g, x, y, 0, 0, rotation, alpha, flipX, flipY);
 		}
 	}
 
@@ -65,23 +72,27 @@ public class Sprite extends BaseContainer<Positioned<Image>, Image> implements
 	}
 
 	@Override
-	public Positioned<Image> createChild(Image value) {
-		return new Positioned<Image>(value);
+	public Positioned createChild(Image value) {
+		return new Positioned(value);
 	}
-	
+
 	protected void calcBounds() {
 		minX = Integer.MAX_VALUE;
 		minY = Integer.MAX_VALUE;
 		int maxX = Integer.MIN_VALUE;
 		int maxY = Integer.MIN_VALUE;
-		
-		for (Positioned<Image> img : childs) {
-			minX = Math.min(img.getX(), minX);
-			minY = Math.min(img.getY(), minY);
-			maxX = Math.max(img.getX() + img.getSource().getWidth() - 1, maxX);
-			maxY = Math.max(img.getY() + img.getSource().getHeight() - 1, maxY);
+
+		for (Positioned img : childs) {
+			Rectangle bound = img.getBounds();
+			bound.x += img.getX();
+			bound.y += img.getY();
+			
+			minX = Math.min(bound.x, minX);
+			minY = Math.min(bound.y, minY);
+			maxX = Math.max(bound.x + bound.width - 1, maxX);
+			maxY = Math.max(bound.y + bound.height - 1, maxY);
 		}
-		
+
 		width = maxX - minX;
 		height = maxY - minY;
 	}
@@ -91,31 +102,84 @@ public class Sprite extends BaseContainer<Positioned<Image>, Image> implements
 		if (!rendered) {
 			return null;
 		}
-		
+
 		calcBounds();
-		
-		BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
+
+		BufferedImage buff = new BufferedImage(width, height,
+				BufferedImage.TYPE_4BYTE_ABGR_PRE);
 		Graphics2D g = buff.createGraphics();
-		
-		for (Positioned<Image> img : childs) {
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+
+		for (Positioned img : childs) {
 			java.awt.Image newImg = img.getSource().getImage();
+
+			if (newImg == null)
+				continue;
+
+			AffineTransform prev = g.getTransform();
+			Composite prec = g.getComposite();
 			
-			if (newImg == null) continue;
+			AffineTransform at = new AffineTransform();
+
+			int rotw = newImg.getWidth(null) / 2;
+			int roth = newImg.getHeight(null) / 2;
 			
-			g.drawImage(newImg, img.getX() - minX, img.getY() - minY, null);
+			int x = img.getX() - minX;
+			int y = img.getY() - minY;
 			
+			if (img.isFlipX()) {
+				at.concatenate(DrawTools.SFLIPY);
+				//x += newImg.getWidth(null);
+				//rotw = -rotw;
+			}
+			
+			if (img.isFlipY()) {
+				at.concatenate(DrawTools.SFLIPX);
+				//y += newImg.getHeight(null);
+				//roth = -roth;
+			}
+
+			if (img.getRotation() != 0) {
+				at.rotate(Math.toRadians(-img.getRotation()),
+						rotw, roth);
+			}
+
+			g.setTransform(at);
+
+			if (img.getAlpha() < 255) {
+				AlphaComposite ac = AlphaComposite.SrcOver.derive(((float) img
+						.getAlpha()) / 255.0f);
+				g.setComposite(ac);
+			}
+
+			g.drawImage(newImg, x, y, null);
+			
+			g.setComposite(prec);
+			g.setTransform(prev);
+
 			newImg.flush();
 		}
 		
+		g.setColor(Color.BLACK);
+		g.drawRect(0, 0, width-1, height-1);
+
 		g.dispose();
-		
+
 		return buff;
 	}
-	
+
 	public int getImageX() {
 		return -minX;
 	}
-	
+
 	public int getImageY() {
 		return -minY;
 	}
