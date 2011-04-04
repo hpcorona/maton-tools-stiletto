@@ -3,14 +3,18 @@
 	background-image: url("${image}");
 }
 
+span.${bundle}, a.${bundle} {
+	display: inline-block;
+}
+
 /* Individual Sprites */
 #foreach($part in $parts)
 #set($x = 0 - ${part.outputX})
 #set($y = 0 - ${part.outputY})
 .${bundle}.${part.name} {
 	background-position: ${x}px ${y}px;
-	width: ${part.width};
-	height: ${part.height};
+	width: ${part.width}px;
+	height: ${part.height}px;
 }
 
 #end
