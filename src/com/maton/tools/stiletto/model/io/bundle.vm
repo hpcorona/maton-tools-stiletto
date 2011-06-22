@@ -6,7 +6,7 @@
 
   <!-- Sprites -->
 #foreach($sprite in $bundle.sprites.list)
-  <Sprite name="arrowRight1">
+  <Sprite name="${sprite.name}">
 #if($sprite.rendered)
     <Image name="${sprite.imageName}" x="${sprite.imageX}" y="${sprite.imageY}" />
 #else
