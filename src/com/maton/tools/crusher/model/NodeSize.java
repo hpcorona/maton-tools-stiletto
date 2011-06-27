@@ -6,8 +6,8 @@ public class NodeSize implements Comparable<NodeSize> {
 	
 	public NodeSize(int width, int height) {
 		super();
-		this.width = width;
-		this.height = height;
+		this.width = width + 2;
+		this.height = height + 2;
 	}
 
 	public int getWidth() {

@@ -102,10 +102,10 @@ public class Crusher {
 		for (PositionedObject<IPart> pos : pparts) {
 			IPart part = pos.getObject();
 
-			g.drawImage(part.getImage(), pos.getX(), pos.getY(), null);
+			g.drawImage(part.getImage(), pos.getX() + 1, pos.getY() + 1, null);
 			
-			part.setOutputX(pos.getX());
-			part.setOutputY(pos.getY());
+			part.setOutputX(pos.getX() + 1);
+			part.setOutputY(pos.getY() + 1);
 		}
 
 		g.dispose();

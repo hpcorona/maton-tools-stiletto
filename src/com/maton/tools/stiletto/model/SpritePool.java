@@ -4,7 +4,7 @@ import com.maton.tools.stiletto.model.base.BasePool;
 
 public class SpritePool extends BasePool<Sprite> {
 
-	public static final Sprite EMPTY = new Sprite("< empty >");
+	public static final Sprite EMPTY = new Sprite("_ empty _");
 	
 	protected BundleContext ctx;
 	
