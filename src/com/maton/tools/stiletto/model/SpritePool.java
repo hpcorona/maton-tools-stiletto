@@ -15,11 +15,15 @@ public class SpritePool extends BasePool<Sprite> {
 	
 	@Override
 	public Sprite getElement(String name) {
-		if (name.equals("< empty >")) {
+		if (name.equals(EMPTY.getName())) {
 			return EMPTY;
 		}
 		
-		return super.getElement(name);
+		Sprite spr = super.getElement(name);
+		if (spr == null) {
+			spr = createElement(name);
+		}
+		return spr;
 	}
 
 	@Override
