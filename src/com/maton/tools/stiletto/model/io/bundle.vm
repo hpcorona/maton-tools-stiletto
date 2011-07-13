@@ -4,6 +4,13 @@
   <Font name="${font.name}" fontPath="${font.name}.fnt" />
 #end
 
+  <!-- Framed Images -->
+#foreach($image in $bundle.images.list)
+#if($image.framed)
+  <Framed name="${image.exportName}" top="${image.top}" left="${image.left}" right="${image.right}" bottom="${image.bottom}" />
+#end
+#end
+
   <!-- Sprites -->
 #foreach($sprite in $bundle.sprites.list)
   <Sprite name="${sprite.name}">

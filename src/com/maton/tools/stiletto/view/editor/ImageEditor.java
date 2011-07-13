@@ -7,6 +7,9 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -14,18 +17,21 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import com.maton.tools.stiletto.model.Image;
+import com.maton.tools.stiletto.model.base.IModelListener;
 import com.maton.tools.stiletto.view.editor.action.ShowGridAction;
 import com.maton.tools.stiletto.view.editor.action.ShowGuideAction;
 import com.maton.tools.stiletto.view.editor.action.ShowSelectionAction;
+import com.maton.tools.stiletto.view.form.FramedForm;
 import com.maton.tools.stiletto.view.table.DefaultTable;
 
-public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBaseEditor, MouseMoveListener, MouseListener {
+public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBaseEditor, MouseMoveListener, MouseListener, IModelListener {
 
 	static ImageDescriptor icon = ImageDescriptor.createFromFile(
 			DefaultTable.class, "image.png");
 
 	protected Image image;
 	protected Canvas canvas;
+	protected FramedForm form;
 	protected boolean showGuide = true;
 	protected boolean showGrid = true;
 	protected boolean showSelection = false;
@@ -77,6 +83,49 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 
 		return toolbar;
 	}
+	
+	@Override
+	protected boolean hasExtraControl() {
+		return true;
+	}
+
+	@Override
+	protected Control createExtraControl(Composite parent) {
+		Composite rowComp = new Composite(parent, SWT.NONE);
+		rowComp.setLayout(new RowLayout());
+		
+		form = new FramedForm(rowComp, image, this);
+		
+		GridLayout layout = new GridLayout();
+		layout.marginBottom = 0;
+		layout.marginHeight = 0;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+		layout.marginWidth = 0;
+		layout.verticalSpacing = 0;
+		layout.horizontalSpacing = 0;
+		rowComp.setLayout(layout);
+
+		GridData gd = null;
+		
+		gd = new GridData();
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessVerticalSpace = true;
+		gd.horizontalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		form.getContainer().setLayoutData(gd);
+
+		return rowComp;
+	}
+	
+	@Override
+	protected ToolBarManager createExtraToolBarManager(Composite parent) {
+		ToolBarManager toolbar = new ToolBarManager(SWT.BORDER | SWT.WRAP);
+		toolbar.createControl(parent);
+
+		return toolbar;
+	}
 
 	@Override
 	public void save() {
@@ -111,7 +160,15 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 		}
 
 		image.draw(e.gc, xOffset, yOffset, 0, 0, 0, 255, false, false);
-		
+
+		if (image.isFramed()) {
+			e.gc.setForeground(COLOR_FRA_FOREGROUND);
+			e.gc.drawLine((int)(xOffset + image.getLeft()), 0, (int)(xOffset + image.getLeft()), canvas.getBounds().height);
+			e.gc.drawLine((int)(xOffset + image.getWidth() - image.getRight()), 0, (int)(xOffset + image.getWidth() - image.getRight()), canvas.getBounds().height);
+			e.gc.drawLine(0, (int)(yOffset + image.getTop()), canvas.getBounds().width, (int)(yOffset + image.getTop()));
+			e.gc.drawLine(0, (int)(yOffset + image.getHeight() - image.getBottom()), canvas.getBounds().width, (int)(yOffset + image.getHeight() - image.getBottom()));
+		}
+
 		if (showSelection) {
 			drawSelection(e.gc, xOffset, yOffset, image.getBounds());
 		}
@@ -165,6 +222,26 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 		xOffset += x;
 		yOffset += y;
 		refreshGraphics();
+	}
+
+	@Override
+	public void notifyInsert(Object obj, int idx) {
+		
+	}
+
+	@Override
+	public void notifyNew(Object obj) {
+		
+	}
+
+	@Override
+	public void notifyChange(Object obj) {
+		refreshGraphics();
+	}
+
+	@Override
+	public void notifyDelete(Object obj) {
+		
 	}
 
 }

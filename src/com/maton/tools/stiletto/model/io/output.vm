@@ -2,7 +2,11 @@
 <bundle>
   <images>
 #foreach($image in $bundle.images.list)
-    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" />
+#if($image.framed)
+    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" framed="true" top="${image.top}" left="${image.left}" right="${image.right}" bottom="${image.bottom}" />
+#else
+    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" framed="false" />
+#end
 #end
   </images>
 #set($sprites = $bundle.sprites.list)

@@ -87,10 +87,24 @@ public class ModelInput {
 			String name = (String) image.getAttribute("name");
 			String filename = (String) image.getAttribute("filename");
 			String export = (String) image.getAttribute("export");
+			String framed = (String) image.getAttribute("framed");
+			float left = (float) image.getDoubleAttribute("left");
+			float right = (float) image.getDoubleAttribute("right");
+			float top = (float) image.getDoubleAttribute("top");
+			float bottom = (float) image.getDoubleAttribute("bottom");
+			
+			if (framed == null) {
+				framed = "false";
+			}
 
 			Image img = bundle.getImages().loadSingle(filename);
 			img.setExportName(name);
 			img.setExport(export.equals("true"));
+			img.setFramed(framed.equals("true"));
+			img.setLeft(left);
+			img.setRight(right);
+			img.setTop(top);
+			img.setBottom(bottom);
 		}
 	}
 

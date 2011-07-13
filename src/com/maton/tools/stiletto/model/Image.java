@@ -16,6 +16,9 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 	private String name;
 	private boolean loaded;
 	private BundleContext ctx;
+	
+	private boolean framed;
+	private float left, right, top, bottom;
 
 	public Image(String name, BundleContext ctx) {
 		this.name = name;
@@ -127,5 +130,45 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 
 	public Rectangle getBounds() {
 		return image.getBounds();
+	}
+
+	public boolean isFramed() {
+		return framed;
+	}
+
+	public void setFramed(boolean framed) {
+		this.framed = framed;
+	}
+
+	public float getLeft() {
+		return left;
+	}
+
+	public void setLeft(float left) {
+		this.left = left;
+	}
+
+	public float getRight() {
+		return right;
+	}
+
+	public void setRight(float right) {
+		this.right = right;
+	}
+
+	public float getTop() {
+		return top;
+	}
+
+	public void setTop(float top) {
+		this.top = top;
+	}
+
+	public float getBottom() {
+		return bottom;
+	}
+
+	public void setBottom(float bottom) {
+		this.bottom = bottom;
 	}
 }

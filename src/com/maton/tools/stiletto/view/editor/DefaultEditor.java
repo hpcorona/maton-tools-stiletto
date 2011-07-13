@@ -259,6 +259,8 @@ public abstract class DefaultEditor {
 			140);
 	static Color COLOR_SEL_FOREGROUND = new Color(Display.getCurrent(), 20, 20,
 			100);
+	static Color COLOR_FRA_FOREGROUND = new Color(Display.getCurrent(), 200, 20,
+			200);
 
 	protected void drawSelection(GC gc, int x, int y,
 			Rectangle rect) {
