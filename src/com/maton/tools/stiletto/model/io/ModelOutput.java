@@ -18,6 +18,8 @@ import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
+import com.maton.tools.stiletto.model.Widget;
+import com.maton.tools.stiletto.model.WidgetState;
 import com.maton.tools.stiletto.model.base.IBaseModel;
 import com.maton.tools.stiletto.model.base.IImageProvider;
 import com.maton.tools.stiletto.model.base.NameResolver;
@@ -48,6 +50,16 @@ public class ModelOutput {
 				}
 			}
 		}
+		
+		List<Widget> widgets = bundle.getWidgets().getList();
+		for (Widget wdg : widgets) {
+			List<WidgetState> childs = wdg.getList();
+			for (WidgetState stt : childs) {
+				if (used.indexOf(stt.getSource()) < 0) {
+					used.add(stt.getSource());
+				}
+			}
+		}
 
 		return used;
 	}
@@ -69,6 +81,7 @@ public class ModelOutput {
 		verifyList(bundle.getAnimations().getList());
 		verifyList(bundle.getActors().getList());
 		verifyList(bundle.getFonts().getList());
+		verifyList(bundle.getWidgets().getList());
 
 		// Exported Images
 		ArrayList<IBaseModel> exported = new ArrayList<IBaseModel>();
@@ -99,6 +112,7 @@ public class ModelOutput {
 		bundle.getAnimations().notifyAllChange();
 		bundle.getActors().notifyAllChange();
 		bundle.getFonts().notifyAllChange();
+		bundle.getWidgets().notifyAllChange();
 	}
 
 	public static boolean save(Bundle bundle) {

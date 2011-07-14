@@ -75,6 +75,27 @@ public class DrawTools {
 		t.dispose();
 	}
 
+	public static void drawImage(Image img, GC gc, int x, int y, int ox, int oy, int sx, int sy, int sw, int sh, int dw, int dh) {
+		Rectangle rect = img.getBounds();
+		int rotw = rect.width / 2;
+		int roth = rect.height / 2;
+		
+		Transform t = new Transform(gc.getDevice());
+		makeRotation(0, x + ox, y + oy, rotw, roth, t);
+
+		gc.setTransform(t);
+		gc.setAlpha(255);
+		
+		try {
+			gc.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		
+		gc.setTransform(null);
+		t.dispose();
+	}
+
 	public static void makeRotation(float angle, int x, int y, int ox, int oy, AffineTransform t) {
 		float rad = (float)Math.toRadians(-angle);
 		float cos = (float)Math.cos(rad);

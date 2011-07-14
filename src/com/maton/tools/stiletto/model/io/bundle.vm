@@ -41,4 +41,13 @@
 #end
   </Actor>
 #end
+
+  <!-- Widgets -->
+#foreach($widget in $bundle.widgets.list)
+  <Widget name="${widget.name}">
+#foreach($state in $widget.list)
+    <State name="${state.name}" image="${state.source.exportName}" />
+#end
+  </Widget>
+#end
 </Bundle>

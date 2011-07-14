@@ -48,6 +48,39 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 		DrawTools.drawImage(image, g, x, y, ox, oy, alpha, rotation, flipX,
 				flipY);
 	}
+	
+	public void draw(GC g, int x, int y, int ox, int oy, int width, int height) {
+		if (!loaded)
+			return;
+		
+		int mw = getWidth() - (int)left - (int)right;
+		int mh = getHeight() - (int)top - (int)bottom;
+		
+		int rw = width - (int)left - (int)right;
+		int rh = height - (int)top - (int)bottom;
+		
+		int px = ox + width - (int)right;
+		int py = oy + height - (int)bottom;
+		
+		if (mw < 0 || mh < 0 || rw < 0 || rh < 0) {
+			return;
+		}
+		
+		// Arriba
+		DrawTools.drawImage(image, g, x, y, ox, oy, 0, 0, (int)left, (int)top, (int)left, (int)top);
+		DrawTools.drawImage(image, g, x, y, ox + (int)left, oy, (int)left, 0, mw, (int)top, rw, (int)top);
+		DrawTools.drawImage(image, g, x, y, px, oy, mw + (int)left, 0, (int)right, (int)top, (int)right, (int)top);
+
+		// Enmedio
+		DrawTools.drawImage(image, g, x, y, ox, oy + (int)top, 0, (int)top, (int)left, mh, (int)left, rh);
+		DrawTools.drawImage(image, g, x, y, ox + (int)left, oy + (int)top, (int)left, (int)top, mw, mh, rw, rh);
+		DrawTools.drawImage(image, g, x, y, px, oy + (int)top, mw + (int)left, (int)top, (int)right, mh, (int)right, rh);
+
+		// Abajo
+		DrawTools.drawImage(image, g, x, y, ox, py, 0, getHeight() - (int)bottom, (int)left, (int)bottom, (int)left, (int)bottom);
+		DrawTools.drawImage(image, g, x, y, ox + (int)left, py, (int)left, getHeight() - (int)bottom, mw, (int)bottom, rw, (int)bottom);
+		DrawTools.drawImage(image, g, x, y, px, py, mw + (int)left, getHeight() - (int)bottom, (int)right, (int)bottom, (int)right, (int)bottom);
+	}
 
 	public void reload() {
 		loaded = false;

@@ -9,28 +9,28 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
-import com.maton.tools.stiletto.model.FontPool;
+import com.maton.tools.stiletto.model.WidgetPool;
 
-public class NewFontAction extends Action {
+public class NewWidgetAction extends Action {
 
 	static ImageDescriptor icon = ImageDescriptor.createFromFile(
-			NewFontAction.class, "document-attribute-f.png");
+			NewWidgetAction.class, "document-attribute-w.png");
 
 	protected Shell shell;
-	protected FontPool pool;
+	protected WidgetPool pool;
 
-	public NewFontAction(Shell shell, FontPool pool) {
+	public NewWidgetAction(Shell shell, WidgetPool pool) {
 		this.shell = shell;
 		this.pool = pool;
 
-		setText("New Font");
-		setToolTipText("Create a new font");
+		setText("New Widget");
+		setToolTipText("Create a new widget");
 		setImageDescriptor(icon);
 	}
 
 	public void run() {
-		InputDialog dialog = new InputDialog(shell, "Create a new Font",
-				"Enter the name for the new Font", "font"
+		InputDialog dialog = new InputDialog(shell, "Create a new Widget",
+				"Enter the name for the new Widget", "widget"
 						+ Math.abs(new Random(System.currentTimeMillis())
 								.nextInt()), new Validator());
 

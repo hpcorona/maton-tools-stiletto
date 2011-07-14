@@ -19,6 +19,8 @@ import com.maton.tools.stiletto.model.Frame;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Positioned;
 import com.maton.tools.stiletto.model.Sprite;
+import com.maton.tools.stiletto.model.Widget;
+import com.maton.tools.stiletto.model.WidgetState;
 
 public class ModelInput {
 	public static boolean load(Bundle bundle) {
@@ -45,6 +47,8 @@ public class ModelInput {
 					loadActors(child, bundle);
 				} else if (child.getName().equals("fonts")) {
 					loadFonts(child, bundle);
+				} else if (child.getName().equals("widgets")) {
+					loadWidgets(child, bundle);
 				}
 			}
 
@@ -57,6 +61,27 @@ public class ModelInput {
 		}
 
 		return false;
+	}
+
+	public static void loadWidgets(XMLElement widgets, Bundle bundle) {
+		@SuppressWarnings("unchecked")
+		Vector<XMLElement> childs = widgets.getChildren();
+		for (XMLElement widget : childs) {
+			String widgetName = widget.getStringAttribute("name");
+			Widget wdg = bundle.getWidgets().newElement(widgetName);
+
+			@SuppressWarnings("unchecked")
+			Vector<XMLElement> states = widget.getChildren();
+			for (XMLElement state : states) {
+				String name = state.getStringAttribute("name");
+				String imgName = state.getStringAttribute("image");
+
+				Image img = bundle.getImages().getElement(imgName);
+
+				WidgetState stateNew = wdg.addChild(img);
+				stateNew.setName(name);
+			}
+		}
 	}
 
 	public static void loadActors(XMLElement actors, Bundle bundle) {

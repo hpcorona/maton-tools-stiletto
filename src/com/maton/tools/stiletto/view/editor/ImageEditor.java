@@ -167,8 +167,18 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 			e.gc.drawLine((int)(xOffset + image.getWidth() - image.getRight()), 0, (int)(xOffset + image.getWidth() - image.getRight()), canvas.getBounds().height);
 			e.gc.drawLine(0, (int)(yOffset + image.getTop()), canvas.getBounds().width, (int)(yOffset + image.getTop()));
 			e.gc.drawLine(0, (int)(yOffset + image.getHeight() - image.getBottom()), canvas.getBounds().width, (int)(yOffset + image.getHeight() - image.getBottom()));
+			
+			int newWidth = image.getWidth() * 2;
+			int newHeight = image.getHeight() * 2;
+			
+			int offX = image.getWidth() + 25;
+			int offY = image.getHeight() + 25;
+			
+			image.draw(e.gc, xOffset, yOffset + offY, 0, 0, image.getWidth(), newHeight);
+			image.draw(e.gc, xOffset + offX, yOffset, 0, 0, newWidth, image.getHeight());
+			image.draw(e.gc, xOffset + offX, yOffset + offY, 0, 0, newWidth, newHeight);
 		}
-
+		
 		if (showSelection) {
 			drawSelection(e.gc, xOffset, yOffset, image.getBounds());
 		}

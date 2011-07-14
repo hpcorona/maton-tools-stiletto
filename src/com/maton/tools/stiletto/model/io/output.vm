@@ -46,4 +46,13 @@
           characters="${font.charactersList}" />
 #end
   </fonts>
+  <widgets>
+#foreach($widget in $bundle.widgets.list)
+    <widget name="${widget.name}">
+#foreach($state in $widget.list)
+      <state name="${state.name}" image="${state.source.name}" />
+#end
+    </widget>
+#end
+  </widgets>
 </bundle>

@@ -29,6 +29,7 @@ public class EditorContainer {
 		container.setSimple(false);
 		container.setUnselectedImageVisible(false);
 		container.setUnselectedCloseVisible(false);
+		container.setUnselectedCloseVisible(true);
 		
 		container.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			@Override

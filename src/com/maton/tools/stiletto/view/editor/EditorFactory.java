@@ -8,6 +8,7 @@ import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.SpritePool;
+import com.maton.tools.stiletto.model.Widget;
 
 public class EditorFactory {
 	public static void launchEditor(CTabFolder parent, Object obj) {
@@ -35,6 +36,10 @@ public class EditorFactory {
 
 		if (obj instanceof Font) {
 			editor = new FontEditor(parent, (Font) obj);
+		}
+		
+		if (obj instanceof Widget) {
+			editor = new WidgetEditor(parent, (Widget) obj);
 		}
 
 		if (editor != null) {

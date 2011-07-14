@@ -21,6 +21,7 @@ import com.maton.tools.stiletto.view.outline.AnimationsOutline;
 import com.maton.tools.stiletto.view.outline.FontsOutline;
 import com.maton.tools.stiletto.view.outline.ImagesOutline;
 import com.maton.tools.stiletto.view.outline.SpritesOutline;
+import com.maton.tools.stiletto.view.outline.WidgetsOutline;
 
 public class BundleEditor {
 
@@ -32,12 +33,16 @@ public class BundleEditor {
 	protected CTabItem item;
 	protected Composite container;
 	protected SashForm sash;
+	
 	protected ExpandBar sections;
+	
 	protected ImagesOutline images;
 	protected SpritesOutline sprites;
 	protected AnimationsOutline animations;
 	protected ActorsOutline actors;
 	protected FontsOutline fonts;
+	protected WidgetsOutline widgets;
+	
 	protected EditorContainer editors;
 	protected Bundle bundle;
 
@@ -73,6 +78,7 @@ public class BundleEditor {
 		animations = new AnimationsOutline(sections, 2, bundle.getAnimations());
 		actors = new ActorsOutline(sections, 3, bundle.getActors());
 		fonts = new FontsOutline(sections, 4, bundle.getFonts());
+		widgets = new WidgetsOutline(sections, 5, bundle.getWidgets());
 
 		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gd.verticalAlignment = SWT.FILL;

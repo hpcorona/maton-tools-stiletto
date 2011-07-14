@@ -17,6 +17,7 @@ public class Bundle {
 	protected AnimationPool animations;
 	protected ActorPool actors;
 	protected FontPool fonts;
+	protected WidgetPool widgets;
 	protected BundleContext ctx;
 
 	public Bundle(Device device, File file) {
@@ -30,6 +31,7 @@ public class Bundle {
 		animations = new AnimationPool(ctx);
 		actors = new ActorPool(ctx);
 		fonts = new FontPool(ctx);
+		widgets = new WidgetPool(ctx);
 
 		if (file.exists()) {
 			load();
@@ -57,6 +59,10 @@ public class Bundle {
 
 	public FontPool getFonts() {
 		return fonts;
+	}
+	
+	public WidgetPool getWidgets() {
+		return widgets;
 	}
 
 	public void refresh() {
@@ -139,6 +145,21 @@ public class Bundle {
 				uses.addAll(spriteUses);
 			}
 		}
+		
+		for (Widget widget : widgets.getList()) {
+			boolean hasIt = false;
+
+			for (WidgetState state : widget.getList()) {
+				if (state.getSource() == image) {
+					hasIt = true;
+					break;
+				}
+			}
+
+			if (hasIt) {
+				uses.add(widget);
+			}
+		}
 
 		return uses;
 	}
@@ -207,6 +228,8 @@ public class Bundle {
 			remove((Actor) item);
 		} else if (item instanceof Font) {
 			remove((Font) item);
+		} else if (item instanceof Widget) {
+			remove((Widget) item);
 		}
 	}
 
@@ -219,6 +242,18 @@ public class Bundle {
 
 				if (pos.getSource() == image) {
 					spr.removeChild(i);
+				}
+			}
+		}
+		
+		for (Widget wdg : widgets.getList()) {
+			List<WidgetState> list = wdg.getList();
+			
+			for (int i = list.size() - 1; i >= 0; i--) {
+				WidgetState stt = list.get(i);
+				
+				if (stt.getSource() == image) {
+					wdg.removeChild(i);
 				}
 			}
 		}
@@ -267,4 +302,9 @@ public class Bundle {
 	public void remove(Font font) {
 		fonts.removeElement(font);
 	}
+	
+	public void remove(Widget widget) {
+		widgets.removeElement(widget);
+	}
+	
 }

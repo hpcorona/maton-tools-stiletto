@@ -34,6 +34,8 @@ public class FramedForm {
 		build();
 
 		modelToScreen();
+
+		setupEvents();
 	}
 
 	public void dispose() {
@@ -54,8 +56,6 @@ public class FramedForm {
 		container.setLayout(layout);
 
 		createFormSection();
-
-		setupEvents();
 	}
 
 	protected void createFormSection() {
@@ -100,6 +100,29 @@ public class FramedForm {
 		right.addListener(SWT.Modify, generic);
 		bottom.addListener(SWT.Modify, generic);
 	}
+	
+	protected float parseFloat(Text item, int max) {
+		if (item.getText().equals("")) {
+			return 0;
+		}
+		
+		try {
+			float num = Float.parseFloat(item.getText().trim());
+			
+			if (num > max) {
+				num = max - 1;
+				item.setText("" + num);
+			} else if (num < 0) {
+				num = 0;
+				item.setText("" + num);
+			}
+			
+			return num;
+		} catch (Throwable e) {
+			item.setText("0");
+			return 0;
+		}
+	}
 
 	protected void screenToModel() {
 		if (image == null) {
@@ -110,37 +133,10 @@ public class FramedForm {
 
 		image.setFramed(framed.getSelection());
 		
-		try {
-			image.setLeft(Float.parseFloat(left.getText().trim()));
-		} catch (Throwable e) {
-			left.setText("0");
-			screenToModel();
-			return;
-		}
-		
-		try {
-			image.setRight(Float.parseFloat(right.getText().trim()));
-		} catch (Throwable e) {
-			right.setText("0");
-			screenToModel();
-			return;
-		}
-		
-		try {
-			image.setTop(Float.parseFloat(top.getText().trim()));
-		} catch (Throwable e) {
-			top.setText("0");
-			screenToModel();
-			return;
-		}
-		
-		try {
-			image.setBottom(Float.parseFloat(bottom.getText().trim()));
-		} catch (Throwable e) {
-			bottom.setText("0");
-			screenToModel();
-			return;
-		}
+		image.setLeft(parseFloat(left, image.getWidth()));
+		image.setRight(parseFloat(right, image.getWidth()));
+		image.setTop(parseFloat(top, image.getHeight()));
+		image.setBottom(parseFloat(bottom, image.getHeight()));
 		
 		listener.notifyChange(image);
 	}
