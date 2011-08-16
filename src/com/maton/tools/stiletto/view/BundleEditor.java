@@ -2,6 +2,7 @@ package com.maton.tools.stiletto.view;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -15,11 +16,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ExpandBar;
 
 import com.maton.tools.stiletto.model.Bundle;
+import com.maton.tools.stiletto.model.Resolution;
 import com.maton.tools.stiletto.process.BundleBuilder;
 import com.maton.tools.stiletto.view.outline.ActorsOutline;
 import com.maton.tools.stiletto.view.outline.AnimationsOutline;
 import com.maton.tools.stiletto.view.outline.FontsOutline;
 import com.maton.tools.stiletto.view.outline.ImagesOutline;
+import com.maton.tools.stiletto.view.outline.ResolutionsOutline;
 import com.maton.tools.stiletto.view.outline.SpritesOutline;
 import com.maton.tools.stiletto.view.outline.WidgetsOutline;
 
@@ -42,6 +45,7 @@ public class BundleEditor {
 	protected ActorsOutline actors;
 	protected FontsOutline fonts;
 	protected WidgetsOutline widgets;
+	protected ResolutionsOutline resolutions;
 	
 	protected EditorContainer editors;
 	protected Bundle bundle;
@@ -73,12 +77,13 @@ public class BundleEditor {
 		sections = new ExpandBar(container, SWT.V_SCROLL);
 		sections.setSpacing(2);
 
-		images = new ImagesOutline(sections, 0, bundle.getImages());
-		sprites = new SpritesOutline(sections, 1, bundle.getSprites());
-		animations = new AnimationsOutline(sections, 2, bundle.getAnimations());
-		actors = new ActorsOutline(sections, 3, bundle.getActors());
-		fonts = new FontsOutline(sections, 4, bundle.getFonts());
-		widgets = new WidgetsOutline(sections, 5, bundle.getWidgets());
+		resolutions = new ResolutionsOutline(sections, 0, bundle.getResolutions());
+		images = new ImagesOutline(sections, 1, bundle.getImages());
+		sprites = new SpritesOutline(sections, 2, bundle.getSprites());
+		animations = new AnimationsOutline(sections, 3, bundle.getAnimations());
+		actors = new ActorsOutline(sections, 4, bundle.getActors());
+		fonts = new FontsOutline(sections, 5, bundle.getFonts());
+		widgets = new WidgetsOutline(sections, 6, bundle.getWidgets());
 
 		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gd.verticalAlignment = SWT.FILL;
@@ -86,7 +91,7 @@ public class BundleEditor {
 		gd.widthHint = 340;
 		sections.setLayoutData(gd);
 
-		editors = new EditorContainer(container);
+		editors = new EditorContainer(container, bundle);
 
 		gd = new GridData(GridData.VERTICAL_ALIGN_END);
 		gd.horizontalAlignment = SWT.FILL;
@@ -130,7 +135,12 @@ public class BundleEditor {
 		ProgressMonitorDialog pmd = new ProgressMonitorDialog(
 				container.getShell());
 		try {
-			pmd.run(true, false, new BundleBuilder(bundle));
+			pmd.run(true, false, new BundleBuilder(bundle, null));
+			
+			List<Resolution> lst =  bundle.getResolutions().getList();
+			for (Resolution res : lst) {
+				pmd.run(true, false, new BundleBuilder(bundle, res));
+			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {

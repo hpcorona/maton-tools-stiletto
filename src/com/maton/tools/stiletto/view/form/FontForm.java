@@ -2,6 +2,7 @@ package com.maton.tools.stiletto.view.form;
 
 import java.awt.GraphicsEnvironment;
 
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -13,6 +14,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.ColorDialog;
@@ -24,15 +26,22 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.maton.tools.stiletto.model.Font;
+import com.maton.tools.stiletto.view.editor.action.DeleteAlternateFontAction;
+import com.maton.tools.stiletto.view.table.AlternateFontsTable;
+import com.maton.tools.stiletto.view.table.DefaultTable;
 
 public class FontForm {
 
 	protected Composite parent;
 	protected Font font;
 	protected Composite container;
+
+	protected TabFolder folder;
 
 	protected Combo face;
 	protected Text size;
@@ -59,6 +68,8 @@ public class FontForm {
 	protected Button shadowColor;
 
 	protected Text characters;
+
+	protected AlternateFontsTable table;
 
 	protected Runnable updater;
 
@@ -91,7 +102,27 @@ public class FontForm {
 	}
 
 	protected void build() {
-		container = new Composite(parent, SWT.BORDER);
+		folder = new TabFolder(parent, SWT.BORDER);
+
+		TabItem config = new TabItem(folder, SWT.BORDER);
+		config.setText("Font");
+		config.setControl(createConfig());
+
+		TabItem chars = new TabItem(folder, SWT.BORDER);
+		chars.setText("Chars");
+		chars.setControl(createChars());
+
+		TabItem res = new TabItem(folder, SWT.BORDER);
+		res.setText("Res.");
+		res.setControl(createTable());
+
+		setupEvents();
+	}
+
+	protected Composite createConfig() {
+		Composite container = new Composite(folder, SWT.BORDER);
+		this.container = container;
+
 		FormLayout layout = new FormLayout();
 		layout.spacing = 5;
 		layout.marginTop = 5;
@@ -105,16 +136,77 @@ public class FontForm {
 		createStrokeSection();
 		createShadowSection();
 
+		return container;
+	}
+
+	protected Composite createChars() {
+		Composite container = new Composite(folder, SWT.BORDER);
+		this.container = container;
+
+		FormLayout layout = new FormLayout();
+		layout.spacing = 5;
+		layout.marginTop = 5;
+		layout.marginLeft = 5;
+		layout.marginRight = 5;
+		layout.marginBottom = 5;
+		container.setLayout(layout);
+
 		Label lblChars = new Label(container, SWT.NONE);
 		lblChars.setText("Chars:");
 		characters = new Text(container, SWT.MULTI | SWT.WRAP | SWT.BORDER
 				| SWT.V_SCROLL);
 		characters.setLayoutData(new GridData(GridData.FILL_BOTH));
-		FormTools.forBoth(lblChars, characters, shadowColor, 5);
+		FormTools.forBoth(lblChars, characters, null, 5);
 		FormData data = (FormData) characters.getLayoutData();
 		data.bottom = new FormAttachment(100);
 
-		setupEvents();
+		return container;
+	}
+
+	protected Composite createTable() {
+		Composite container = new Composite(folder, SWT.BORDER);
+		this.container = container;
+		
+		GridLayout layout = new GridLayout();
+		layout.marginBottom = 0;
+		layout.marginHeight = 0;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+		layout.marginWidth = 0;
+		layout.verticalSpacing = 0;
+		layout.horizontalSpacing = 0;
+		container.setLayout(layout);
+
+		ToolBarManager toolbar = new ToolBarManager(SWT.BORDER | SWT.WRAP);
+		toolbar.createControl(container);
+		
+		table = new AlternateFontsTable(container,
+				DefaultTable.DEFAULT_TABLE_STYLE, font);
+		
+		toolbar.add(new DeleteAlternateFontAction(table, font));
+		toolbar.update(true);
+
+		GridData gd = null;
+
+		gd = new GridData();
+		gd.horizontalAlignment = SWT.FILL;
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.minimumHeight = 200;
+		gd.horizontalSpan = 1;
+		toolbar.getControl().setLayoutData(gd);
+		toolbar.update(true);
+
+		gd = new GridData();
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessVerticalSpace = true;
+		gd.horizontalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.horizontalSpan = 1;
+		table.getTable().setLayoutData(gd);
+		
+		return container;
 	}
 
 	protected void createFontSection() {

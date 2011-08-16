@@ -17,7 +17,7 @@ public class FormTools {
 	}
 	
 	public static void forInput(Control principal, Control label, Control superior, int head) {
-		FormData data = new FormData(150, SWT.DEFAULT);
+		FormData data = new FormData(110, SWT.DEFAULT);
 		
 		if (superior != null) {
 			data.top = new FormAttachment(superior, head);
@@ -26,7 +26,7 @@ public class FormTools {
 		}
 		
 		data.left = new FormAttachment(label);
-		data.right = new FormAttachment(100);
+		data.right = new FormAttachment(95);
 		
 		principal.setLayoutData(data);
 	}

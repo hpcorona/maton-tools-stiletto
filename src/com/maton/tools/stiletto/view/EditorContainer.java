@@ -8,6 +8,7 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 
+import com.maton.tools.stiletto.model.Bundle;
 import com.maton.tools.stiletto.view.editor.DefaultEditor;
 import com.maton.tools.stiletto.view.editor.EditorFactory;
 
@@ -15,15 +16,18 @@ public class EditorContainer {
 
 	protected Composite parent;
 	protected CTabFolder container;
+	protected Bundle bundle;
 
-	public EditorContainer(Composite parent) {
+	public EditorContainer(Composite parent, Bundle bundle) {
 		this.parent = parent;
+		this.bundle = bundle;
 
 		build();
 	}
 
 	protected void build() {
 		container = new CTabFolder(parent, SWT.BORDER);
+		container.setData(bundle);
 
 		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		container.setSimple(false);

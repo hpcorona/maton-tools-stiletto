@@ -1,13 +1,13 @@
 <Bundle atlasPath="${atlas}">
   <!-- Fonts -->
 #foreach($font in $bundle.fonts.list)
-  <Font name="${font.name}" fontPath="${font.name}.fnt" />
+  <Font name="${font.name}" fontPath="${prefix}${font.name}.fnt" />
 #end
 
   <!-- Framed Images -->
 #foreach($image in $bundle.images.list)
 #if($image.framed)
-  <Framed name="${image.exportName}" top="${image.top}" left="${image.left}" right="${image.right}" bottom="${image.bottom}" />
+  <Framed name="${image.exportName}" top="${image.resTop}" left="${image.resLeft}" right="${image.resRight}" bottom="${image.resBottom}" />
 #end
 #end
 
@@ -18,7 +18,7 @@
     <Image name="${sprite.imageName}" x="${sprite.imageX}" y="${sprite.imageY}" />
 #else
 #foreach($component in $sprite.list)
-    <Image name="${component.source.exportName}" x="${component.x}" y="${component.y}" alpha="${component.alpha}" rotation="${component.rotation}" flipX="${component.flipX}" flipY="${component.flipY}" />
+    <Image name="${component.source.exportName}" x="${component.resX}" y="${component.resY}" alpha="${component.alpha}" rotation="${component.rotation}" flipX="${component.flipX}" flipY="${component.flipY}" />
 #end
 #end
   </Sprite>

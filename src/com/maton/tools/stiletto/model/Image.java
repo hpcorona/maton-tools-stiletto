@@ -16,11 +16,14 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 	private String name;
 	private boolean loaded;
 	private BundleContext ctx;
+	private AlternatePool alternates;
+	private Resolution resolution;
 	
 	private boolean framed;
 	private float left, right, top, bottom;
 
 	public Image(String name, BundleContext ctx) {
+		alternates = new AlternatePool();
 		this.name = name;
 		loaded = false;
 		this.ctx = ctx;
@@ -203,5 +206,77 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 
 	public void setBottom(float bottom) {
 		this.bottom = bottom;
+	}
+
+	public AlternatePool getAlternates() {
+		return alternates;
+	}
+
+	public Resolution getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(Resolution resolution) {
+		this.resolution = resolution;
+	}
+	
+	public float getResLeft() {
+		float scale = 1;
+		
+		if (resolution != null) {
+			scale = resolution.getScale();
+			
+			Alternate alt = getAlternates().getElement(resolution.getName());
+			if (alt != null) {
+				scale = alt.getScaleX();
+			}
+		}
+		
+		return left * scale;
+	}
+
+	public float getResRight() {
+		float scale = 1;
+		
+		if (resolution != null) {
+			scale = resolution.getScale();
+			
+			Alternate alt = getAlternates().getElement(resolution.getName());
+			if (alt != null) {
+				scale = alt.getScaleX();
+			}
+		}
+
+		return right * scale;
+	}
+
+	public float getResTop() {
+		float scale = 1;
+		
+		if (resolution != null) {
+			scale = resolution.getScale();
+			
+			Alternate alt = getAlternates().getElement(resolution.getName());
+			if (alt != null) {
+				scale = alt.getScaleY();
+			}
+		}
+
+		return top * scale;
+	}
+
+	public float getResBottom() {
+		float scale = 1;
+		
+		if (resolution != null) {
+			scale = resolution.getScale();
+			
+			Alternate alt = getAlternates().getElement(resolution.getName());
+			if (alt != null) {
+				scale = alt.getScaleY();
+			}
+		}
+
+		return bottom * scale;
 	}
 }

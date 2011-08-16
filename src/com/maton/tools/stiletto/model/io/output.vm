@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bundle>
+  <resolutions>
+#foreach($resolution in $bundle.resolutions.list)
+    <resolution name="${resolution.name}" scale="${resolution.scale}" />
+#end
+  </resolutions>
   <images>
 #foreach($image in $bundle.images.list)
 #if($image.framed)
-    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" framed="true" top="${image.top}" left="${image.left}" right="${image.right}" bottom="${image.bottom}" />
+    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" framed="true" top="${image.top}" left="${image.left}" right="${image.right}" bottom="${image.bottom}">
 #else
-    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" framed="false" />
+    <image name="${image.exportName}" filename="${image.name}" export="${image.export}" framed="false">
 #end
+#foreach($ri in $image.alternates.list)
+      <alt resolution="${ri.name}" filename="${ri.imageName}" scaleX="${ri.scaleX}" scaleY="${ri.scaleY}" />
+#end
+    </image>
 #end
   </images>
 #set($sprites = $bundle.sprites.list)
@@ -43,7 +52,11 @@
           fill="${font.fill}" fillAngle="${font.fillAngle}" fillColor0="${font.fillColor0Int}" fillColor1="${font.fillColor1Int}"
           stroke="${font.stroke}" strokeWidth="${font.strokeWidth}" strokeAngle="${font.strokeAngle}" strokeColor0="${font.strokeColor0Int}" strokeColor1="${font.strokeColor1Int}"
           shadow="${font.shadow}" shadowX="${font.shadowX}" shadowY="${font.shadowY}" shadowAlpha="${font.shadowAlpha}" shadowColor="${font.shadowColorInt}"
-          characters="${font.charactersList}" />
+          characters="${font.charactersList}">
+#foreach($ri in $font.alternates.list)
+      <alt resolution="${ri.name}" size="${ri.size}" stroke="${ri.stroke}" shadowX="${ri.shadowX}" shadowY="${ri.shadowY}" />
+#end
+    </font>
 #end
   </fonts>
   <widgets>

@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Image;
 
 public class BundleContext {
 	public static final String IMG_PATH = "src";
+	public static final String RES_PATH = "resolution";
 	public static final String BUILD_PATH = "build";
 
 	public Device device;
@@ -30,12 +31,20 @@ public class BundleContext {
 		String buiPath = getBuildPath("");
 		File buiFile = new File(buiPath);
 		buiFile.mkdir();
+
+		String resPath = getResolutionPath("");
+		File resFile = new File(resPath);
+		resFile.mkdir();
 	}
 
 	public Image loadImage(String name) {
 		return new Image(device, getImagePath(name));
 	}
-	
+
+	public Image loadAlternate(String name) {
+		return new Image(device, getResolutionPath(name));
+	}
+
 	public String getImagePath(String name) {
 		String fileName = projectPath;
 		if (!fileName.endsWith(File.separator)) {
@@ -56,6 +65,16 @@ public class BundleContext {
 		return fileName;
 	}
 
+	public String getResolutionPath(String name) {
+		String fileName = projectPath;
+		if (!fileName.endsWith(File.separator)) {
+			fileName += File.separator;
+		}
+		fileName += RES_PATH + File.separator + name;
+		
+		return fileName;
+	}
+
 	public java.awt.Image loadAwtImage(String name) {
 		try {
 			return ImageIO.read(new File(getImagePath(name)));
@@ -64,4 +83,11 @@ public class BundleContext {
 		}
 	}
 	
+	public java.awt.Image loadAwtAlternate(String name) {
+		try {
+			return ImageIO.read(new File(getResolutionPath(name)));
+		} catch (IOException e) {
+			return null;
+		}
+	}
 }

@@ -76,6 +76,7 @@ public class ModelOutput {
 	}
 
 	public static void verifyBundle(Bundle bundle) {
+		verifyList(bundle.getResolutions().getList());
 		verifyList(bundle.getImages().getList());
 		verifyList(bundle.getSprites().getList());
 		verifyList(bundle.getAnimations().getList());
@@ -107,6 +108,7 @@ public class ModelOutput {
 
 		verifyList(exported);
 		
+		bundle.getResolutions().notifyAllChange();
 		bundle.getImages().notifyAllChange();
 		bundle.getSprites().notifyAllChange();
 		bundle.getAnimations().notifyAllChange();
@@ -269,13 +271,14 @@ public class ModelOutput {
 		return true;
 	}
 	
-	public static boolean saveBundle(File bundleFile, String atlas, Bundle bundle) {
+	public static boolean saveBundle(File bundleFile, String prefix, String atlas, Bundle bundle) {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty("resource.loader", "mine");
 		ve.setProperty("mine.resource.loader.instance",
 				new InternalResourceLoader());
 
 		VelocityContext ctx = new VelocityContext();
+		ctx.put("prefix", prefix);
 		ctx.put("atlas", atlas);
 		ctx.put("bundle", bundle);
 

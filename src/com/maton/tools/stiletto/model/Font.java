@@ -53,8 +53,11 @@ public class Font implements IBaseModel {
 
 	protected String characters;
 
+	protected AlternateFontPool alternates;
+
 	public Font(String name) {
 		this.name = name;
+		alternates = new AlternateFontPool();
 		startup();
 	}
 
@@ -251,8 +254,23 @@ public class Font implements IBaseModel {
 	protected FontRenderContext context;
 
 	public void regenFont(Graphics2D g) {
+		regenFont(g, null);
+	}
+
+	public void regenFont(Graphics2D g, Resolution res) {
 		if (font != null) {
 			font = null;
+		}
+		
+		AlternateFont alt = null;
+		
+		int size = this.size;
+		if (res != null) {
+			alt = getAlternates().getElement(res.getName());
+			
+			if (alt != null) {
+				size = alt.getSize();
+			}
 		}
 
 		int fontHints = java.awt.Font.PLAIN;
@@ -285,7 +303,7 @@ public class Font implements IBaseModel {
 
 		ImageData data = SwingTools.convertToSWT(buff);
 		Image letter = new Image(Display.getCurrent(), data);
-		gc.drawImage(letter, x - metric.x, y - metric.y);
+		gc.drawImage(letter, x - metric.x, y - metric.y + 1);
 		letter.dispose();
 	}
 
@@ -300,8 +318,33 @@ public class Font implements IBaseModel {
 			metric.y = 0;
 		}
 	}
-
+	
 	public void calcMetrics(Graphics2D g, CharMetric metric) {
+		calcMetrics(g, metric, null);
+	}
+
+	public void calcMetrics(Graphics2D g, CharMetric metric, Resolution res) {
+		AlternateFont alt = null;
+		
+		boolean stroke = this.stroke;
+		int strokeWidth = this.strokeWidth;
+		boolean shadow = this.shadow;
+		int shadowX = this.shadowX;
+		int shadowY = this.shadowY;
+		
+		if (res != null) {
+			alt = getAlternates().getElement(res.getName());
+			
+			if (alt != null) {
+				stroke = alt.getStroke() != 0;
+				strokeWidth = alt.getStroke();
+				
+				shadow = alt.getShadowX() != 0 || alt.getShadowY() != 0;
+				shadowX = alt.getShadowX();
+				shadowY = alt.getShadowY();
+			}
+		}
+
 		char letra = metric.letter;
 		AttributedString as = new AttributedString("" + letra);
 		as.addAttribute(TextAttribute.FONT, font);
@@ -359,9 +402,33 @@ public class Font implements IBaseModel {
 
 		metric.xadvance = (int) tl.getAdvance();
 	}
+	
+	public void renderChar(Graphics2D g, int x, int y, CharMetric metric) {
+		renderChar(g, x, y, metric, null);
+	}
 
-	public void renderChar(Graphics2D g, int x, int y,
-			CharMetric metric) {
+	public void renderChar(Graphics2D g, int x, int y, CharMetric metric, Resolution res) {
+		AlternateFont alt = null;
+		
+		boolean stroke = this.stroke;
+		int strokeWidth = this.strokeWidth;
+		boolean shadow = this.shadow;
+		int shadowX = this.shadowX;
+		int shadowY = this.shadowY;
+		
+		if (res != null) {
+			alt = getAlternates().getElement(res.getName());
+			
+			if (alt != null) {
+				stroke = alt.getStroke() != 0;
+				strokeWidth = alt.getStroke();
+				
+				shadow = alt.getShadowX() != 0 || alt.getShadowY() != 0;
+				shadowX = alt.getShadowX();
+				shadowY = alt.getShadowY();
+			}
+		}
+
 		char letra = metric.letter;
 		AttributedString as = new AttributedString("" + letra);
 		as.addAttribute(TextAttribute.FONT, font);
@@ -389,7 +456,7 @@ public class Font implements IBaseModel {
 
 			Shape shadowClip = tl.getOutline(AffineTransform
 					.getTranslateInstance(metric.x + x + shadowX, metric.y + y
-							+ shadowY));
+							+ shadowY + 1));
 			g.setColor(shadowColor);
 			g.fill(shadowClip);
 
@@ -403,7 +470,7 @@ public class Font implements IBaseModel {
 
 		// Fill
 		Shape outlineClip = tl.getOutline(AffineTransform.getTranslateInstance(
-				metric.x + x, metric.y + y));
+				metric.x + x, metric.y + y + 1));
 		if (fill) {
 			if (fillAngle == 0) {
 				g.setPaint(new GradientPaint(x, y, fillColor0, x, y + metric.y
@@ -475,25 +542,52 @@ public class Font implements IBaseModel {
 	}
 	
 	public List<CharMetric> getCharMetrics() {
+		return getCharMetrics(null);
+	}
+
+	public List<CharMetric> getCharMetrics(Resolution res) {
 		ArrayList<CharMetric> chars = new ArrayList<CharMetric>();
 		
-		BufferedImage buff = new BufferedImage(size * 2, size * 2,
+		AlternateFont alt = null;
+		
+		int sizex = this.size;
+		if (res != null) {
+			alt = getAlternates().getElement(res.getName());
+			
+			if (alt != null) {
+				sizex = alt.getSize();
+			}
+		}
+
+		BufferedImage buff = new BufferedImage(sizex * 2, sizex * 2,
 				BufferedImage.TYPE_4BYTE_ABGR_PRE);
 		Graphics2D g = buff.createGraphics();
-		regenFont(g);
-		
+		regenFont(g, res);
+
 		for (int i = 0; i < characters.length(); i++) {
 			CharMetric metric = new CharMetric();
 			metric.letter = characters.charAt(i);
-			calcMetrics(g, metric);
+			calcMetrics(g, metric, res);
 			adjust(metric);
-			
+
 			chars.add(metric);
 		}
-		
+
 		g.dispose();
 		buff.flush();
-		
+
 		return chars;
+	}
+
+	public AlternateFontPool getAlternates() {
+		return alternates;
+	}
+	
+	public boolean hasAlternate(Resolution res) {
+		if (res == null) {
+			return true;
+		}
+		
+		return getAlternates().getElement(res.getName()) != null;
 	}
 }

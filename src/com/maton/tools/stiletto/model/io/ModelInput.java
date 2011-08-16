@@ -12,12 +12,15 @@ import nanoxml.XMLParseException;
 
 import com.maton.tools.stiletto.model.Action;
 import com.maton.tools.stiletto.model.Actor;
+import com.maton.tools.stiletto.model.Alternate;
+import com.maton.tools.stiletto.model.AlternateFont;
 import com.maton.tools.stiletto.model.Animation;
 import com.maton.tools.stiletto.model.Bundle;
 import com.maton.tools.stiletto.model.Font;
 import com.maton.tools.stiletto.model.Frame;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Positioned;
+import com.maton.tools.stiletto.model.Resolution;
 import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.Widget;
 import com.maton.tools.stiletto.model.WidgetState;
@@ -49,6 +52,8 @@ public class ModelInput {
 					loadFonts(child, bundle);
 				} else if (child.getName().equals("widgets")) {
 					loadWidgets(child, bundle);
+				} else if (child.getName().equals("resolutions")) {
+					loadResolutions(child, bundle);
 				}
 			}
 
@@ -117,7 +122,7 @@ public class ModelInput {
 			float right = (float) image.getDoubleAttribute("right");
 			float top = (float) image.getDoubleAttribute("top");
 			float bottom = (float) image.getDoubleAttribute("bottom");
-			
+
 			if (framed == null) {
 				framed = "false";
 			}
@@ -130,6 +135,36 @@ public class ModelInput {
 			img.setRight(right);
 			img.setTop(top);
 			img.setBottom(bottom);
+
+			loadImageAlternates(image, img);
+		}
+	}
+
+	public static void loadImageAlternates(XMLElement alternates, Image image) {
+		@SuppressWarnings("unchecked")
+		Vector<XMLElement> childs = alternates.getChildren();
+		for (XMLElement alt : childs) {
+			String name = (String) alt.getAttribute("resolution");
+			String filename = (String) alt.getAttribute("filename");
+			float scaleX = (float) alt.getDoubleAttribute("scaleX");
+			float scaleY = (float) alt.getDoubleAttribute("scaleY");
+
+			Alternate alti = image.getAlternates().newElement(name);
+			alti.setImageName(filename);
+			alti.setScaleX(scaleX);
+			alti.setScaleY(scaleY);
+		}
+	}
+
+	public static void loadResolutions(XMLElement resolutions, Bundle bundle) {
+		@SuppressWarnings("unchecked")
+		Vector<XMLElement> childs = resolutions.getChildren();
+		for (XMLElement res : childs) {
+			String name = (String) res.getAttribute("name");
+			float scale = (float) res.getDoubleAttribute("scale");
+
+			Resolution resolution = bundle.getResolutions().newElement(name);
+			resolution.setScale(scale);
 		}
 	}
 
@@ -153,8 +188,10 @@ public class ModelInput {
 				int y = module.getIntAttribute("y");
 				int alpha = module.getIntAttribute("alpha");
 				float rotation = (float) module.getDoubleAttribute("rotation");
-				boolean flipX = module.getBooleanAttribute("flipX", "true", "false", false);
-				boolean flipY = module.getBooleanAttribute("flipY", "true", "false", false);
+				boolean flipX = module.getBooleanAttribute("flipX", "true",
+						"false", false);
+				boolean flipY = module.getBooleanAttribute("flipY", "true",
+						"false", false);
 
 				Image img = bundle.getImages().getElement(name);
 
@@ -197,53 +234,79 @@ public class ModelInput {
 			String name = fnt.getStringAttribute("name");
 			String face = fnt.getStringAttribute("face");
 			int size = fnt.getIntAttribute("size");
-			boolean bold = fnt.getBooleanAttribute("bold", "true", "false", false);
-			boolean italic = fnt.getBooleanAttribute("italic", "true", "false", false);
-			
-			boolean fill = fnt.getBooleanAttribute("fill", "true", "false", true);
+			boolean bold = fnt.getBooleanAttribute("bold", "true", "false",
+					false);
+			boolean italic = fnt.getBooleanAttribute("italic", "true", "false",
+					false);
+
+			boolean fill = fnt.getBooleanAttribute("fill", "true", "false",
+					true);
 			int fillAngle = fnt.getIntAttribute("fillAngle");
 			int fillColor0 = fnt.getIntAttribute("fillColor0");
 			int fillColor1 = fnt.getIntAttribute("fillColor1");
-			
-			boolean stroke = fnt.getBooleanAttribute("stroke", "true", "false", false);
+
+			boolean stroke = fnt.getBooleanAttribute("stroke", "true", "false",
+					false);
 			int strokeWidth = fnt.getIntAttribute("strokeWidth");
 			int strokeAngle = fnt.getIntAttribute("strokeAngle");
 			int strokeColor0 = fnt.getIntAttribute("strokeColor0");
 			int strokeColor1 = fnt.getIntAttribute("strokeColor1");
-			
-			boolean shadow = fnt.getBooleanAttribute("shadow", "true", "false", true);
+
+			boolean shadow = fnt.getBooleanAttribute("shadow", "true", "false",
+					true);
 			int shadowX = fnt.getIntAttribute("shadowX");
 			int shadowY = fnt.getIntAttribute("shadowY");
 			int shadowAlpha = fnt.getIntAttribute("shadowAlpha");
 			int shadowColor = fnt.getIntAttribute("shadowColor");
-			
+
 			String characters = fnt.getStringAttribute("characters");
-			
+
 			Font font = bundle.getFonts().newElement(name);
 			font.setName(name);
 			font.setFace(face);
 			font.setSize(size);
 			font.setBold(bold);
 			font.setItalic(italic);
-			
+
 			font.setFill(fill);
 			font.setFillAngle(fillAngle);
 			font.setFillColor0(new Color(fillColor0));
 			font.setFillColor1(new Color(fillColor1));
-			
+
 			font.setStroke(stroke);
 			font.setStrokeWidth(strokeWidth);
 			font.setStrokeAngle(strokeAngle);
 			font.setStrokeColor0(new Color(strokeColor0));
 			font.setStrokeColor1(new Color(strokeColor1));
-			
+
 			font.setShadow(shadow);
 			font.setShadowX(shadowX);
 			font.setShadowY(shadowY);
 			font.setShadowAlpha(shadowAlpha);
 			font.setShadowColor(new Color(shadowColor));
-			
+
 			font.setCharactersList(characters);
+			
+			loadFontAlternates(fnt, font);
 		}
 	}
+
+	public static void loadFontAlternates(XMLElement alternates, Font font) {
+		@SuppressWarnings("unchecked")
+		Vector<XMLElement> childs = alternates.getChildren();
+		for (XMLElement alt : childs) {
+			String name = (String) alt.getAttribute("resolution");
+			int size = alt.getIntAttribute("size");
+			int stroke = alt.getIntAttribute("stroke");
+			int shadowX = alt.getIntAttribute("shadowX");
+			int shadowY = alt.getIntAttribute("shadowY");
+
+			AlternateFont alti = font.getAlternates().newElement(name);
+			alti.setSize(size);
+			alti.setStroke(stroke);
+			alti.setShadowX(shadowX);
+			alti.setShadowY(shadowY);
+		}
+	}
+
 }

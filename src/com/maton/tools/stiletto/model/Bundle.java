@@ -18,6 +18,7 @@ public class Bundle {
 	protected ActorPool actors;
 	protected FontPool fonts;
 	protected WidgetPool widgets;
+	protected ResolutionPool resolutions;
 	protected BundleContext ctx;
 
 	public Bundle(Device device, File file) {
@@ -32,6 +33,7 @@ public class Bundle {
 		actors = new ActorPool(ctx);
 		fonts = new FontPool(ctx);
 		widgets = new WidgetPool(ctx);
+		resolutions = new ResolutionPool(ctx);
 
 		if (file.exists()) {
 			load();
@@ -63,6 +65,10 @@ public class Bundle {
 	
 	public WidgetPool getWidgets() {
 		return widgets;
+	}
+	
+	public ResolutionPool getResolutions() {
+		return resolutions;
 	}
 
 	public void refresh() {
@@ -97,6 +103,7 @@ public class Bundle {
 		animations.clear();
 		sprites.clear();
 		images.clear();
+		resolutions.clear();
 	}
 
 	public BundleContext getCtx() {
@@ -120,6 +127,8 @@ public class Bundle {
 			return findUses((Actor) item);
 		} else if (item instanceof Font) {
 			return findUses((Font) item);
+		} else if (item instanceof Resolution) {
+			return findUses((Resolution) item);
 		}
 
 		return new ArrayList<IBaseModel>();
@@ -188,6 +197,22 @@ public class Bundle {
 		return uses;
 	}
 
+	public List<IBaseModel> findUses(Resolution resolution) {
+		ArrayList<IBaseModel> uses = new ArrayList<IBaseModel>();
+
+		for (Image img : images.getList()) {
+			boolean hasIt = false;
+
+			hasIt = img.getAlternates().getElement(resolution.getName()) != null;
+
+			if (hasIt) {
+				uses.add(img);
+			}
+		}
+
+		return uses;
+	}
+	
 	public List<IBaseModel> findUses(Animation animation) {
 		ArrayList<IBaseModel> uses = new ArrayList<IBaseModel>();
 
@@ -230,6 +255,8 @@ public class Bundle {
 			remove((Font) item);
 		} else if (item instanceof Widget) {
 			remove((Widget) item);
+		} else if (item instanceof Resolution) {
+			remove((Resolution) item);
 		}
 	}
 
@@ -277,6 +304,17 @@ public class Bundle {
 		}
 
 		sprites.removeElement(sprite);
+	}
+	
+	public void remove(Resolution resolution) {
+		for (Image img : images.getList()) {
+			Alternate ri = img.getAlternates().getElement(resolution.getName());
+			if (ri != null) {
+				img.getAlternates().removeElement(ri);
+			}
+		}
+
+		resolutions.removeElement(resolution);
 	}
 
 	public void remove(Animation animation) {

@@ -14,6 +14,7 @@ public class Positioned implements Drawable {
 	private float rotation;
 	private boolean flipX;
 	private boolean flipY;
+	private Resolution resolution;
 
 	public Positioned(Image source) {
 		this.source = source;
@@ -109,6 +110,48 @@ public class Positioned implements Drawable {
 		rect.height -= ny;
 
 		return rect;
+	}
+
+	public Resolution getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(Resolution resolution) {
+		this.resolution = resolution;
+	}
+	
+	public float getResX() {
+		if (resolution == null) {
+			return (float)x;
+		}
+		
+		if (source == null) {
+			return resolution.scale * (float)x;
+		}
+		
+		Alternate alt = source.getAlternates().getElement(resolution.getName());
+		if (alt == null) {
+			return resolution.scale * (float)x;
+		}
+		
+		return alt.scaleX * (float)x;
+	}
+	
+	public float getResY() {
+		if (resolution == null) {
+			return (float)y;
+		}
+		
+		if (source == null) {
+			return resolution.scale * (float)y;
+		}
+		
+		Alternate alt = source.getAlternates().getElement(resolution.getName());
+		if (alt == null) {
+			return resolution.scale * (float)y;
+		}
+		
+		return alt.scaleY * (float)y;
 	}
 
 }

@@ -16,12 +16,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import com.maton.tools.stiletto.model.Bundle;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.base.IModelListener;
+import com.maton.tools.stiletto.view.editor.action.DeleteAlternateAction;
 import com.maton.tools.stiletto.view.editor.action.ShowGridAction;
 import com.maton.tools.stiletto.view.editor.action.ShowGuideAction;
 import com.maton.tools.stiletto.view.editor.action.ShowSelectionAction;
 import com.maton.tools.stiletto.view.form.FramedForm;
+import com.maton.tools.stiletto.view.table.AlternatesTable;
 import com.maton.tools.stiletto.view.table.DefaultTable;
 
 public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBaseEditor, MouseMoveListener, MouseListener, IModelListener {
@@ -29,8 +32,10 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 	static ImageDescriptor icon = ImageDescriptor.createFromFile(
 			DefaultTable.class, "image.png");
 
+	protected Bundle bundle;
 	protected Image image;
 	protected Canvas canvas;
+	protected AlternatesTable table;
 	protected FramedForm form;
 	protected boolean showGuide = true;
 	protected boolean showGrid = true;
@@ -43,6 +48,7 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 		image = img;
 		item.setText(image.getName());
 		item.setImage(icon.createImage());
+		bundle = (Bundle)parent.getData();
 
 		build();
 	}
@@ -94,7 +100,14 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 		Composite rowComp = new Composite(parent, SWT.NONE);
 		rowComp.setLayout(new RowLayout());
 		
+		table = new AlternatesTable(rowComp, DefaultTable.DEFAULT_TABLE_STYLE,
+				image, bundle);
+
+		extraToolbar.add(new DeleteAlternateAction(table, image));
+		extraToolbar.update(true);
+		
 		form = new FramedForm(rowComp, image, this);
+		
 		
 		GridLayout layout = new GridLayout();
 		layout.marginBottom = 0;
@@ -114,6 +127,12 @@ public class ImageEditor extends DefaultEditor implements IGraphicsEditor, IBase
 		gd.grabExcessVerticalSpace = true;
 		gd.horizontalAlignment = SWT.FILL;
 		gd.grabExcessHorizontalSpace = true;
+		table.getTable().setLayoutData(gd);
+
+		gd = new GridData();
+		gd.horizontalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.heightHint = 150;
 		form.getContainer().setLayoutData(gd);
 
 		return rowComp;

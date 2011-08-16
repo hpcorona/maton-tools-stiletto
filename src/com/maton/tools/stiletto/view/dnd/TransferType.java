@@ -2,16 +2,20 @@ package com.maton.tools.stiletto.view.dnd;
 
 import com.maton.tools.stiletto.model.Action;
 import com.maton.tools.stiletto.model.Actor;
+import com.maton.tools.stiletto.model.Alternate;
 import com.maton.tools.stiletto.model.Animation;
 import com.maton.tools.stiletto.model.Frame;
 import com.maton.tools.stiletto.model.Image;
 import com.maton.tools.stiletto.model.Positioned;
+import com.maton.tools.stiletto.model.Resolution;
 import com.maton.tools.stiletto.model.Sprite;
 import com.maton.tools.stiletto.model.Widget;
 import com.maton.tools.stiletto.model.WidgetState;
 
 public class TransferType {
 
+	public static final DefaultTransferType RESOLUTION;
+	public static final DefaultTransferType ALTERNATE;
 	public static final DefaultTransferType IMAGE;
 	public static final DefaultTransferType FRAMED;
 	public static final DefaultTransferType SPRITE;
@@ -23,6 +27,8 @@ public class TransferType {
 	public static final DefaultTransferType WIDGETSTATE;
 	public static final DefaultTransferType WIDGET;
 
+	public static final int RESOLUTION_TYPE;
+	public static final int ALTERNATE_TYPE;
 	public static final int IMAGE_TYPE;
 	public static final int FRAMED_TYPE;
 	public static final int SPRITE_TYPE;
@@ -35,6 +41,8 @@ public class TransferType {
 	public static final int WIDGET_TYPE;
 
 	static {
+		RESOLUTION = new DefaultTransferType(Resolution.class.getName());
+		ALTERNATE = new DefaultTransferType(Alternate.class.getName());
 		IMAGE = new DefaultTransferType(Image.class.getName());
 		FRAMED = new DefaultTransferType(Image.class.getName() + "_Framed");
 		SPRITE = new DefaultTransferType(Sprite.class.getName());
@@ -46,6 +54,8 @@ public class TransferType {
 		WIDGETSTATE = new DefaultTransferType(WidgetState.class.getName() + "_Image");
 		WIDGET = new DefaultTransferType(Widget.class.getName());
 
+		RESOLUTION_TYPE = RESOLUTION.getType();
+		ALTERNATE_TYPE = ALTERNATE.getType();
 		IMAGE_TYPE = IMAGE.getType();
 		FRAMED_TYPE = FRAMED.getType();
 		SPRITE_TYPE = SPRITE.getType();
