@@ -62,6 +62,8 @@ public class AlternateFontsTable extends DefaultTable<AlternateFont> {
 										.getSize()));
 								alt.setStroke((int) (res.getScale() * font
 										.getStrokeWidth()));
+								
+								font.getAlternates().notifyChange(alt);
 							}
 
 							table.select(font.getAlternates().getList()
