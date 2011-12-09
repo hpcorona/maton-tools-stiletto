@@ -92,7 +92,9 @@ public class BundleBuilder implements IRunnableWithProgress {
 
 			File fontFile = new File(bundle.getCtx().getBuildPath(
 					prefix + font.getName() + ".fnt"));
+			font.setResolution(resolution);
 			ModelOutput.saveFont(fontFile, font, fontChars.get(font.getName()));
+			font.setResolution(null);
 		}
 
 		monitor.subTask("Writing the final Bundle...");

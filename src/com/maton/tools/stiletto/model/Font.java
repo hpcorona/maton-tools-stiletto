@@ -401,6 +401,7 @@ public class Font implements IBaseModel {
 		}
 
 		metric.xadvance = (int) tl.getAdvance();
+		metric.height += 2;
 	}
 	
 	public void renderChar(Graphics2D g, int x, int y, CharMetric metric) {
@@ -589,5 +590,23 @@ public class Font implements IBaseModel {
 		}
 		
 		return getAlternates().getElement(res.getName()) != null;
+	}
+	
+	AlternateFont currentAlternate;
+	
+	public void setResolution(Resolution res) {
+		if (res != null) {
+			currentAlternate = getAlternates().getElement(res.getName());
+		} else {
+			currentAlternate = null;
+		}
+	}
+	
+	public int getAlternateSize() {
+		if (currentAlternate == null) {
+			return size;
+		}
+		
+		return currentAlternate.getSize();
 	}
 }

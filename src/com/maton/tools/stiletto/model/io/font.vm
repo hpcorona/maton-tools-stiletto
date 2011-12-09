@@ -1,6 +1,6 @@
 <font>
-  <info face="${font.name}" size="${font.size}" />
-  <common lineHeight="${font.size}" />
+  <info face="${font.name}" size="${font.alternateSize}" />
+  <common lineHeight="${font.alternateSize}" />
   <pages>
     <page id="0" />
   </pages>
