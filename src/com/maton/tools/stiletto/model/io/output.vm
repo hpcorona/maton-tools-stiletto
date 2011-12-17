@@ -49,9 +49,9 @@
   <fonts>
 #foreach($font in $bundle.fonts.list)
     <font name="${font.name}" face="${font.face}" size="${font.size}" bold="${font.bold}" italic="${font.italic}"
-          fill="${font.fill}" fillAngle="${font.fillAngle}" fillColor0="${font.fillColor0Int}" fillColor1="${font.fillColor1Int}"
+          fill="${font.fill}" fillBlur="${font.fillBlur}" fillAngle="${font.fillAngle}" fillColor0="${font.fillColor0Int}" fillColor1="${font.fillColor1Int}"
           stroke="${font.stroke}" strokeWidth="${font.strokeWidth}" strokeAngle="${font.strokeAngle}" strokeColor0="${font.strokeColor0Int}" strokeColor1="${font.strokeColor1Int}"
-          shadow="${font.shadow}" shadowX="${font.shadowX}" shadowY="${font.shadowY}" shadowAlpha="${font.shadowAlpha}" shadowColor="${font.shadowColorInt}"
+          shadow="${font.shadow}" shadowBlur="${font.shadowBlur}" shadowX="${font.shadowX}" shadowY="${font.shadowY}" shadowAlpha="${font.shadowAlpha}" shadowColor="${font.shadowColorInt}"
           characters="${font.charactersList}">
 #foreach($ri in $font.alternates.list)
       <alt resolution="${ri.name}" size="${ri.size}" stroke="${ri.stroke}" shadowX="${ri.shadowX}" shadowY="${ri.shadowY}" />

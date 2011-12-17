@@ -241,6 +241,8 @@ public class ModelInput {
 
 			boolean fill = fnt.getBooleanAttribute("fill", "true", "false",
 					true);
+			boolean fillBlur = fnt.getBooleanAttribute("fillBlur", "true", "false",
+					true);
 			int fillAngle = fnt.getIntAttribute("fillAngle");
 			int fillColor0 = fnt.getIntAttribute("fillColor0");
 			int fillColor1 = fnt.getIntAttribute("fillColor1");
@@ -253,6 +255,8 @@ public class ModelInput {
 			int strokeColor1 = fnt.getIntAttribute("strokeColor1");
 
 			boolean shadow = fnt.getBooleanAttribute("shadow", "true", "false",
+					true);
+			boolean shadowBlur = fnt.getBooleanAttribute("shadowBlur", "true", "false",
 					true);
 			int shadowX = fnt.getIntAttribute("shadowX");
 			int shadowY = fnt.getIntAttribute("shadowY");
@@ -269,6 +273,7 @@ public class ModelInput {
 			font.setItalic(italic);
 
 			font.setFill(fill);
+			font.setFillBlur(fillBlur);
 			font.setFillAngle(fillAngle);
 			font.setFillColor0(new Color(fillColor0));
 			font.setFillColor1(new Color(fillColor1));
@@ -280,6 +285,7 @@ public class ModelInput {
 			font.setStrokeColor1(new Color(strokeColor1));
 
 			font.setShadow(shadow);
+			font.setShadowBlur(shadowBlur);
 			font.setShadowX(shadowX);
 			font.setShadowY(shadowY);
 			font.setShadowAlpha(shadowAlpha);

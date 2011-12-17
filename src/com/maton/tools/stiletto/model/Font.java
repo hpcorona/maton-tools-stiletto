@@ -3,6 +3,8 @@ package com.maton.tools.stiletto.model;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
+import java.awt.CompositeContext;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -12,6 +14,11 @@ import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ArrayList;
@@ -23,6 +30,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 
+import com.maton.tools.stiletto.graphics.BlendComposite;
+import com.maton.tools.stiletto.graphics.BlendComposite.BlendingMode;
 import com.maton.tools.stiletto.model.base.IBaseModel;
 import com.maton.tools.stiletto.util.SwingTools;
 
@@ -38,6 +47,7 @@ public class Font implements IBaseModel {
 	protected int fillAngle;
 	protected Color fillColor0;
 	protected Color fillColor1;
+	protected boolean fillBlur;
 
 	protected boolean stroke;
 	protected int strokeWidth;
@@ -50,6 +60,7 @@ public class Font implements IBaseModel {
 	protected int shadowY;
 	protected int shadowAlpha;
 	protected Color shadowColor;
+	protected boolean shadowBlur;
 
 	protected String characters;
 
@@ -71,6 +82,7 @@ public class Font implements IBaseModel {
 		fillAngle = 0;
 		fillColor0 = Color.BLACK;
 		fillColor1 = Color.BLACK;
+		fillBlur = true;
 
 		stroke = false;
 		strokeAngle = 0;
@@ -82,6 +94,7 @@ public class Font implements IBaseModel {
 		shadowY = 1;
 		shadowAlpha = 255;
 		shadowColor = Color.GRAY;
+		shadowBlur = true;
 
 		characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789‡Ž’—œçƒêîò–„Ÿ†À?[]{}¡Á!~@#$%^&*()-=_+<>,./;:'\"\\|";
 	}
@@ -261,13 +274,13 @@ public class Font implements IBaseModel {
 		if (font != null) {
 			font = null;
 		}
-		
+
 		AlternateFont alt = null;
-		
+
 		int size = this.size;
 		if (res != null) {
 			alt = getAlternates().getElement(res.getName());
-			
+
 			if (alt != null) {
 				size = alt.getSize();
 			}
@@ -287,14 +300,35 @@ public class Font implements IBaseModel {
 		font = new java.awt.Font(face, fontHints, size);
 	}
 
-	public void draw(GC gc, int x, int y, CharMetric metric) {
-		BufferedImage buff = new BufferedImage(size * 2, size * 2,
-				BufferedImage.TYPE_4BYTE_ABGR_PRE);
+	public BufferedImage newBufferedImage(CharMetric metric, Resolution res) {
+		int size = this.size * 2;
+
+		if (res != null) {
+			AlternateFont alt = getAlternates().getElement(res.getName());
+			if (alt != null) {
+				size = alt.getSize() * 2;
+			}
+		}
+
+		return new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB_PRE);
+	}
+
+	public Graphics2D hdGraphics(BufferedImage buff) {
 		Graphics2D g = buff.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+				RenderingHints.VALUE_STROKE_NORMALIZE);
+		g.setRenderingHint(RenderingHints.KEY_RENDERING,
+				RenderingHints.VALUE_RENDER_QUALITY);
+		return g;
+	}
+
+	public void draw(GC gc, int x, int y, CharMetric metric) {
+		BufferedImage buff = newBufferedImage(metric, null);
+		Graphics2D g = hdGraphics(buff);
 		regenFont(g);
 		calcMetrics(g, metric);
 		adjust(metric);
@@ -318,27 +352,27 @@ public class Font implements IBaseModel {
 			metric.y = 0;
 		}
 	}
-	
+
 	public void calcMetrics(Graphics2D g, CharMetric metric) {
 		calcMetrics(g, metric, null);
 	}
 
 	public void calcMetrics(Graphics2D g, CharMetric metric, Resolution res) {
 		AlternateFont alt = null;
-		
+
 		boolean stroke = this.stroke;
 		int strokeWidth = this.strokeWidth;
 		boolean shadow = this.shadow;
 		int shadowX = this.shadowX;
 		int shadowY = this.shadowY;
-		
+
 		if (res != null) {
 			alt = getAlternates().getElement(res.getName());
-			
+
 			if (alt != null) {
 				stroke = alt.getStroke() != 0;
 				strokeWidth = alt.getStroke();
-				
+
 				shadow = alt.getShadowX() != 0 || alt.getShadowY() != 0;
 				shadowX = alt.getShadowX();
 				shadowY = alt.getShadowY();
@@ -400,35 +434,49 @@ public class Font implements IBaseModel {
 			}
 		}
 
+		if ((fill && fillBlur) || (shadow && shadowBlur)) {
+			metric.x += 4;
+			metric.y += 4;
+			metric.width += 8;
+			metric.height += 8;
+		}
+
 		metric.xadvance = (int) tl.getAdvance();
 		metric.height += 2;
+		metric.width += 2;
 	}
-	
+
 	public void renderChar(Graphics2D g, int x, int y, CharMetric metric) {
 		renderChar(g, x, y, metric, null);
 	}
 
-	public void renderChar(Graphics2D g, int x, int y, CharMetric metric, Resolution res) {
+	public void renderShadowPass(BufferedImage bimg, int x, int y,
+			CharMetric metric, Resolution res) {
 		AlternateFont alt = null;
-		
-		boolean stroke = this.stroke;
-		int strokeWidth = this.strokeWidth;
-		boolean shadow = this.shadow;
+
+		if (!shadow)
+			return;
+
 		int shadowX = this.shadowX;
 		int shadowY = this.shadowY;
-		
+
 		if (res != null) {
 			alt = getAlternates().getElement(res.getName());
-			
+
 			if (alt != null) {
-				stroke = alt.getStroke() != 0;
-				strokeWidth = alt.getStroke();
-				
 				shadow = alt.getShadowX() != 0 || alt.getShadowY() != 0;
 				shadowX = alt.getShadowX();
 				shadowY = alt.getShadowY();
 			}
 		}
+
+		BufferedImage writeTo = bimg;
+
+		if (shadowBlur) {
+			writeTo = newBufferedImage(metric, res);
+		}
+
+		Graphics2D g = hdGraphics(writeTo);
 
 		char letra = metric.letter;
 		AttributedString as = new AttributedString("" + letra);
@@ -449,30 +497,104 @@ public class Font implements IBaseModel {
 			metric.y = 0;
 		}
 
-		// Shadow
-		if (shadow) {
-			AlphaComposite ac = AlphaComposite.SrcOver
-					.derive(((float) shadowAlpha) / 255.0f);
-			g.setComposite(ac);
+		AlphaComposite ac = AlphaComposite.SrcOver
+				.derive(((float) shadowAlpha) / 255.0f);
+		g.setComposite(ac);
 
-			Shape shadowClip = tl.getOutline(AffineTransform
-					.getTranslateInstance(metric.x + x + shadowX, metric.y + y
-							+ shadowY + 1));
-			g.setColor(shadowColor);
-			g.fill(shadowClip);
+		Shape shadowClip = tl.getOutline(AffineTransform.getTranslateInstance(
+				metric.x + x + shadowX, metric.y + y + shadowY + 1));
+		g.setColor(shadowColor);
+		g.fill(shadowClip);
 
-			if (stroke) {
-				g.setStroke(new BasicStroke(strokeWidth));
-				g.draw(shadowClip);
-			}
+		if (stroke) {
+			g.setStroke(new BasicStroke(strokeWidth));
+			g.draw(shadowClip);
+		}
 
-			g.setComposite(AlphaComposite.Src);
+		g.setComposite(AlphaComposite.Src);
+
+		g.dispose();
+
+		if (shadowBlur) {
+			GAUSSIAN_BLUR.filter(writeTo, bimg);
+		}
+	}
+
+	public void renderFillPass(BufferedImage bimg, int x, int y,
+			CharMetric metric, Resolution res) {
+		if (!fill)
+			return;
+
+		BufferedImage writeTo = bimg;
+
+		if (fillBlur) {
+			writeTo = newBufferedImage(metric, res);
+		}
+
+		Graphics2D g = hdGraphics(writeTo);
+
+		char letra = metric.letter;
+		AttributedString as = new AttributedString("" + letra);
+		as.addAttribute(TextAttribute.FONT, font);
+
+		AttributedCharacterIterator aci = as.getIterator();
+		TextLayout tl = new TextLayout(aci, context);
+
+		if (metric.x < 0) {
+			metric.width -= metric.x;
+			x += metric.x;
+			metric.x = 0;
+		}
+
+		if (metric.y < 0) {
+			metric.height -= metric.y;
+			y += metric.y;
+			metric.y = 0;
 		}
 
 		// Fill
-		Shape outlineClip = tl.getOutline(AffineTransform.getTranslateInstance(
-				metric.x + x, metric.y + y + 1));
-		if (fill) {
+		if (fillBlur) {
+			g.setPaint(fillColor0);
+			g.fillRect(0, 0, writeTo.getWidth(), writeTo.getHeight());
+			Shape outlineClip = tl.getOutline(AffineTransform
+					.getTranslateInstance(metric.x + x, metric.y + y + 1));
+			g.setPaint(fillColor1);
+			g.fill(outlineClip);
+
+			g.dispose();
+
+			BufferedImage blurred = newBufferedImage(metric, res);
+
+			GAUSSIAN_BLUR.filter(writeTo, blurred);
+
+			writeTo.flush();
+
+			for (int i = 0; i < 7; i++) {
+				writeTo = newBufferedImage(metric, res);
+
+				GAUSSIAN_BLUR.filter(blurred, writeTo);
+
+				blurred.flush();
+				blurred = writeTo;
+			}
+
+			writeTo = newBufferedImage(metric, res);
+			g = hdGraphics(writeTo);
+			g.setPaint(Color.WHITE);
+			g.fill(outlineClip);
+			g.dispose();
+
+			g = hdGraphics(bimg);
+			g.drawImage(blurred, null, 0, 0);
+			g.setComposite(BlendComposite.Multiply);
+			g.drawImage(writeTo, null, 0, 0);
+			g.dispose();
+
+			writeTo.flush();
+			blurred.flush();
+		} else {
+			Shape outlineClip = tl.getOutline(AffineTransform
+					.getTranslateInstance(metric.x + x, metric.y + y + 1));
 			if (fillAngle == 0) {
 				g.setPaint(new GradientPaint(x, y, fillColor0, x, y + metric.y
 						+ metric.height, fillColor1));
@@ -481,20 +603,86 @@ public class Font implements IBaseModel {
 						+ metric.width, y, fillColor1));
 			}
 			g.fill(outlineClip);
+
+			g.dispose();
+		}
+	}
+
+	public void renderStrokePass(BufferedImage bimg, int x, int y,
+			CharMetric metric, Resolution res) {
+		AlternateFont alt = null;
+
+		boolean stroke = this.stroke;
+		int strokeWidth = this.strokeWidth;
+
+		if (res != null) {
+			alt = getAlternates().getElement(res.getName());
+
+			if (alt != null) {
+				stroke = alt.getStroke() != 0;
+				strokeWidth = alt.getStroke();
+			}
 		}
 
-		// Outline
-		if (stroke) {
-			if (strokeAngle == 0) {
-				g.setPaint(new GradientPaint(x, y, strokeColor0, x, y
-						+ metric.y + metric.height, strokeColor1));
-			} else {
-				g.setPaint(new GradientPaint(x, y, strokeColor0, x + metric.x
-						+ metric.width, y, strokeColor1));
-			}
-			g.setStroke(new BasicStroke(strokeWidth));
-			g.draw(outlineClip);
+		if (!stroke)
+			return;
+
+		BufferedImage writeTo = bimg;
+
+		Graphics2D g = hdGraphics(writeTo);
+
+		char letra = metric.letter;
+		AttributedString as = new AttributedString("" + letra);
+		as.addAttribute(TextAttribute.FONT, font);
+
+		AttributedCharacterIterator aci = as.getIterator();
+		TextLayout tl = new TextLayout(aci, context);
+
+		if (metric.x < 0) {
+			metric.width -= metric.x;
+			x += metric.x;
+			metric.x = 0;
 		}
+
+		if (metric.y < 0) {
+			metric.height -= metric.y;
+			y += metric.y;
+			metric.y = 0;
+		}
+
+		AlphaComposite ac = AlphaComposite.SrcOver
+				.derive(((float) shadowAlpha) / 255.0f);
+		g.setComposite(ac);
+
+		Shape outlineClip = tl.getOutline(AffineTransform.getTranslateInstance(
+				metric.x + x, metric.y + y + 1));
+		if (strokeAngle == 0) {
+			g.setPaint(new GradientPaint(x, y, strokeColor0, x, y + metric.y
+					+ metric.height, strokeColor1));
+		} else {
+			g.setPaint(new GradientPaint(x, y, strokeColor0, x + metric.x
+					+ metric.width, y, strokeColor1));
+		}
+		g.setStroke(new BasicStroke(strokeWidth));
+		g.draw(outlineClip);
+
+		g.dispose();
+	}
+
+	public void renderChar(Graphics2D g, int x, int y, CharMetric metric,
+			Resolution res) {
+
+		BufferedImage shadow = newBufferedImage(metric, res);
+		BufferedImage fill = newBufferedImage(metric, res);
+		BufferedImage stroke = newBufferedImage(metric, res);
+
+		renderShadowPass(shadow, x, y, metric, res);
+		renderFillPass(fill, x, y, metric, res);
+		renderStrokePass(stroke, x, y, metric, res);
+
+		g.drawImage(shadow, null, 0, 0);
+		g.drawImage(fill, null, 0, 0);
+		g.drawImage(stroke, null, 0, 0);
 	}
 
 	public String getCharacters() {
@@ -541,20 +729,20 @@ public class Font implements IBaseModel {
 	public Object getSelf() {
 		return this;
 	}
-	
+
 	public List<CharMetric> getCharMetrics() {
 		return getCharMetrics(null);
 	}
 
 	public List<CharMetric> getCharMetrics(Resolution res) {
 		ArrayList<CharMetric> chars = new ArrayList<CharMetric>();
-		
+
 		AlternateFont alt = null;
-		
+
 		int sizex = this.size;
 		if (res != null) {
 			alt = getAlternates().getElement(res.getName());
-			
+
 			if (alt != null) {
 				sizex = alt.getSize();
 			}
@@ -583,17 +771,17 @@ public class Font implements IBaseModel {
 	public AlternateFontPool getAlternates() {
 		return alternates;
 	}
-	
+
 	public boolean hasAlternate(Resolution res) {
 		if (res == null) {
 			return true;
 		}
-		
+
 		return getAlternates().getElement(res.getName()) != null;
 	}
-	
+
 	AlternateFont currentAlternate;
-	
+
 	public void setResolution(Resolution res) {
 		if (res != null) {
 			currentAlternate = getAlternates().getElement(res.getName());
@@ -601,12 +789,42 @@ public class Font implements IBaseModel {
 			currentAlternate = null;
 		}
 	}
-	
+
 	public int getAlternateSize() {
 		if (currentAlternate == null) {
 			return size;
 		}
-		
+
 		return currentAlternate.getSize();
+	}
+
+	protected static final float[] GAUSSIAN_BLUR_MATRIX = { 0.00000067f,
+			0.00002292f, 0.00019117f, 0.00038771f, 0.00019117f, 0.00002292f,
+			0.00000067f, 0.00002292f, 0.00078633f, 0.00655965f, 0.01330373f,
+			0.00655965f, 0.00078633f, 0.00002292f, 0.00019117f, 0.00655965f,
+			0.05472157f, 0.11098164f, 0.05472157f, 0.00655965f, 0.00019117f,
+			0.00038771f, 0.01330373f, 0.11098164f, 0.22508352f, 0.11098164f,
+			0.01330373f, 0.00038771f, 0.00019117f, 0.00655965f, 0.05472157f,
+			0.11098164f, 0.05472157f, 0.00655965f, 0.00019117f, 0.00002292f,
+			0.00078633f, 0.00655965f, 0.01330373f, 0.00655965f, 0.00078633f,
+			0.00002292f, 0.00000067f, 0.00002292f, 0.00019117f, 0.00038771f,
+			0.00019117f, 0.00002292f, 0.00000067f };
+	protected static final ConvolveOp GAUSSIAN_BLUR = new ConvolveOp(
+			new Kernel(7, 7, GAUSSIAN_BLUR_MATRIX));
+
+	public boolean isFillBlur() {
+		return fillBlur;
+	}
+
+	public void setFillBlur(boolean fillBlur) {
+		this.fillBlur = fillBlur;
+	}
+
+	public boolean isShadowBlur() {
+		return shadowBlur;
+	}
+
+	public void setShadowBlur(boolean shadowBlur) {
+		this.shadowBlur = shadowBlur;
 	}
 }

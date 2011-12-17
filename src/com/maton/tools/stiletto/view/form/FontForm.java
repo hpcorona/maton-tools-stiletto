@@ -49,6 +49,7 @@ public class FontForm {
 	protected Button italic;
 
 	protected Button fill;
+	protected Button fillBlur;
 	protected Button fillAngleVertical;
 	protected Button fillAngleHorizontal;
 	protected Button fillColor0;
@@ -62,6 +63,7 @@ public class FontForm {
 	protected Button strokeColor1;
 
 	protected Button shadow;
+	protected Button shadowBlur;
 	protected Text shadowX;
 	protected Text shadowY;
 	protected Scale shadowAlpha;
@@ -249,6 +251,10 @@ public class FontForm {
 		Label lblFill = new Label(container, SWT.NONE);
 		fill = new Button(container, SWT.CHECK);
 		fill.setText("Fill");
+		
+		Label lblFillBlur = new Label(container, SWT.NONE);
+		fillBlur = new Button(container, SWT.CHECK);
+		fillBlur.setText("Internal Blur");
 
 		Label lblAngleVert = new Label(container, SWT.NONE);
 		lblAngleVert.setText("Angle:");
@@ -267,7 +273,8 @@ public class FontForm {
 		fillColor1 = createColorButton(colorsFill);
 
 		FormTools.forBoth(lblFill, fill, italic, 5);
-		FormTools.forBoth(lblAngleVert, grp, fill, 0);
+		FormTools.forBoth(lblFillBlur, fillBlur, fill, 0);
+		FormTools.forBoth(lblAngleVert, grp, fillBlur, 0);
 		FormTools.forBoth(lblGradient, colorsFill, grp, 0);
 	}
 
@@ -309,6 +316,10 @@ public class FontForm {
 		Label lblShadow = new Label(container, SWT.NONE);
 		shadow = new Button(container, SWT.CHECK);
 		shadow.setText("Shadow");
+		
+		Label lblShadowBlur = new Label(container, SWT.NONE);
+		shadowBlur = new Button(container, SWT.CHECK);
+		shadowBlur.setText("Blur the Shadow");
 
 		Label lblShadowX = new Label(container, SWT.NONE);
 		lblShadowX.setText("X off:");
@@ -329,7 +340,8 @@ public class FontForm {
 		shadowColor = createColorButton(container);
 
 		FormTools.forBoth(lblShadow, shadow, colorsStroke, 5);
-		FormTools.forBoth(lblShadowX, shadowX, shadow, 0);
+		FormTools.forBoth(lblShadowBlur, shadowBlur, shadow, 0);
+		FormTools.forBoth(lblShadowX, shadowX, shadowBlur, 0);
 		FormTools.forBoth(lblShadowY, shadowY, shadowX, 0);
 		FormTools.forBoth(lblAlpha, shadowAlpha, shadowY, 0);
 		FormTools.forBoth(lblColor, shadowColor, shadowAlpha, 0);
@@ -407,6 +419,7 @@ public class FontForm {
 		font.setFillAngle(fillAngleHorizontal.getSelection() ? 0 : 1);
 		font.setFillColor0(getSwingColor(fillColor0));
 		font.setFillColor1(getSwingColor(fillColor1));
+		font.setFillBlur(fillBlur.getSelection());
 
 		font.setStroke(stroke.getSelection());
 		font.setStrokeWidth(Integer.valueOf("0" + strokeWidth.getText()));
@@ -419,6 +432,7 @@ public class FontForm {
 		font.setShadowColor(getSwingColor(shadowColor));
 		font.setShadowX(Integer.valueOf("0" + shadowX.getText()));
 		font.setShadowY(Integer.valueOf("0" + shadowY.getText()));
+		font.setShadowBlur(shadowBlur.getSelection());
 
 		font.setCharacters(characters.getText());
 	}
@@ -433,6 +447,7 @@ public class FontForm {
 		fillAngleHorizontal.setSelection(font.getFillAngle() == 0);
 		setSwingColor(fillColor0, font.getFillColor0());
 		setSwingColor(fillColor1, font.getFillColor1());
+		fillBlur.setSelection(font.isFillBlur());
 
 		stroke.setSelection(font.isStroke());
 		strokeWidth.setText("" + font.getStrokeWidth());
@@ -445,6 +460,7 @@ public class FontForm {
 		setSwingColor(shadowColor, font.getShadowColor());
 		shadowX.setText("" + font.getShadowX());
 		shadowY.setText("" + font.getShadowY());
+		shadowBlur.setSelection(font.isShadowBlur());
 
 		characters.setText(font.getCharacters());
 	}
