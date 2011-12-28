@@ -3,8 +3,6 @@ package com.maton.tools.stiletto.model;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Composite;
-import java.awt.CompositeContext;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -14,11 +12,8 @@ import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ArrayList;
@@ -31,7 +26,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 
 import com.maton.tools.stiletto.graphics.BlendComposite;
-import com.maton.tools.stiletto.graphics.BlendComposite.BlendingMode;
 import com.maton.tools.stiletto.model.base.IBaseModel;
 import com.maton.tools.stiletto.util.SwingTools;
 
@@ -434,16 +428,18 @@ public class Font implements IBaseModel {
 			}
 		}
 
-		if ((fill && fillBlur) || (shadow && shadowBlur)) {
+		if (shadow && shadowBlur) {
 			metric.x += 4;
 			metric.y += 4;
 			metric.width += 8;
 			metric.height += 8;
 		}
 
+		metric.x += 3;
+		metric.y += 3;
 		metric.xadvance = (int) tl.getAdvance();
-		metric.height += 2;
-		metric.width += 2;
+		metric.height += 6;
+		metric.width += 4;
 	}
 
 	public void renderChar(Graphics2D g, int x, int y, CharMetric metric) {

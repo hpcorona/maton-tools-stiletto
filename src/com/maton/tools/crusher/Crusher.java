@@ -1,5 +1,6 @@
 package com.maton.tools.crusher;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -98,10 +99,12 @@ public class Crusher {
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setColor(Color.MAGENTA);
 
 		for (PositionedObject<IPart> pos : pparts) {
 			IPart part = pos.getObject();
 
+			//g.drawRect(pos.getX() + 1, pos.getY() + 1, part.getWidth(), part.getHeight());
 			g.drawImage(part.getImage(), pos.getX() + 1, pos.getY() + 1, null);
 			
 			part.setOutputX(pos.getX() + 1);
