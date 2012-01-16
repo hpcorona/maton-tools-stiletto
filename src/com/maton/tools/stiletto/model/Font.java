@@ -5,6 +5,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
@@ -822,5 +823,19 @@ public class Font implements IBaseModel {
 
 	public void setShadowBlur(boolean shadowBlur) {
 		this.shadowBlur = shadowBlur;
+	}
+	
+	public boolean isValid() {
+		GraphicsEnvironment gEnv = GraphicsEnvironment
+		.getLocalGraphicsEnvironment();
+		String fonts[] = gEnv.getAvailableFontFamilyNames();
+		
+		for (String name : fonts) {
+			if (name.equals(this.face)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
