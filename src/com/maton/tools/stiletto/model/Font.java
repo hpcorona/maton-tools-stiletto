@@ -566,7 +566,14 @@ public class Font implements IBaseModel {
 
 			writeTo.flush();
 
-			for (int i = 0; i < 7; i++) {
+			int passes = size / 8;
+			if (res != null) {
+				passes = (int) ((size * res.scale) / 8);
+			}
+			if (passes < 1) {
+				passes = 1;
+			}
+			for (int i = 0; i < passes; i++) {
 				writeTo = newBufferedImage(metric, res);
 
 				GAUSSIAN_BLUR.filter(blurred, writeTo);
