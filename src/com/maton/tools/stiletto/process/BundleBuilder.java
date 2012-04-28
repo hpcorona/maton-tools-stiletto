@@ -175,9 +175,35 @@ public class BundleBuilder implements IRunnableWithProgress {
 					part = new ImagePart(name, img, alti);
 				} else {
 					float scale = resolution.getScale();
+					java.awt.Image base = null;
+					float scaleAliased = 1.0f;
+					
+					Resolution baseRes = resolution;
+					
+					while (baseRes != null && baseRes.getBasedOn() != null && baseRes.getBasedOn().length() > 0) {
+						baseRes = bundle.getResolutions().getElement(baseRes.getBasedOn());
+						if (baseRes != null) {
+							alt = ((Image) img).getAlternates().getElement(baseRes.getName());
+							
+							if (alt != null) {
+								base = resizedImage(bundle.getCtx().loadAwtAlternate(alt.getImageName() + ".png"), scale);
+								break;
+							} else {
+								scale = scale * baseRes.getScale();
+								scaleAliased = scaleAliased * baseRes.getScale();
+							}
+						}
+					}
+					
+					if (img instanceof Image) {
+						((Image)img).setScaleAliased(scaleAliased);
+					}
 
-					part = new ImagePart(name, img, resizedImage(
-							img.getImage(), scale));
+					if (base == null) {
+						base = resizedImage(img.getImage(), scale);
+					}
+
+					part = new ImagePart(name, img, base);
 				}
 			}
 			parts.add(part);

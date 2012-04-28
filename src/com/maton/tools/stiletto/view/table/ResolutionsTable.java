@@ -74,7 +74,7 @@ public class ResolutionsTable extends DefaultTable<Resolution> {
 
 	@Override
 	protected DefaultColumn<Resolution>[] getColumns() {
-		return new ResolutionsColumn[] { new NameColumn(table), new ScaleColumn() };
+		return new ResolutionsColumn[] { new NameColumn(table), new ScaleColumn(), new BasedOnColumn(table) };
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class ResolutionsTable extends DefaultTable<Resolution> {
 	class NameColumn extends ResolutionsColumn {
 
 		public NameColumn(Table parent) {
-			super("name", "Resolution Name", 250, SWT.LEFT, true,
+			super("name", "Resolution Name", 190, SWT.LEFT, true,
 					new TextCellEditor(table));
 
 			sorter = new DefaultSorter<Resolution>() {
@@ -154,6 +154,39 @@ public class ResolutionsTable extends DefaultTable<Resolution> {
 				element.setScale(scale);
 			} catch (Throwable e) {
 			}
+		}
+
+	}
+	
+	class BasedOnColumn extends ResolutionsColumn {
+
+		public BasedOnColumn(Table parent) {
+			super("basedOn", "Based On", 50, SWT.LEFT, true,
+					new TextCellEditor(table));
+
+			sorter = new DefaultSorter<Resolution>() {
+
+				@Override
+				public int compareElements(Viewer viewer, Resolution t1, Resolution t2) {
+					return t1.getBasedOn().compareTo(t2.getBasedOn());
+				}
+
+			};
+		}
+
+		@Override
+		public Object getValue(Resolution element) {
+			return element.getBasedOn();
+		}
+
+		@Override
+		public String getText(Resolution element) {
+			return element.getBasedOn();
+		}
+
+		@Override
+		public void modify(Resolution element, Object value) {
+			element.setBasedOn((String)value);
 		}
 
 	}

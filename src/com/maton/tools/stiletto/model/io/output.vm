@@ -2,7 +2,7 @@
 <bundle>
   <resolutions>
 #foreach($resolution in $bundle.resolutions.list)
-    <resolution name="${resolution.name}" scale="${resolution.scale}" />
+    <resolution name="${resolution.name}" scale="${resolution.scale}" basedOn="${resolution.basedOn}" />
 #end
   </resolutions>
   <images>

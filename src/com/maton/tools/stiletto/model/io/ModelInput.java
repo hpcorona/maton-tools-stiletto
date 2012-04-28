@@ -162,9 +162,14 @@ public class ModelInput {
 		for (XMLElement res : childs) {
 			String name = (String) res.getAttribute("name");
 			float scale = (float) res.getDoubleAttribute("scale");
+			String basedOn = (String) res.getAttribute("basedOn");
+			if (basedOn == null) {
+				basedOn = "";
+			}
 
 			Resolution resolution = bundle.getResolutions().newElement(name);
 			resolution.setScale(scale);
+			resolution.setBasedOn(basedOn);
 		}
 	}
 

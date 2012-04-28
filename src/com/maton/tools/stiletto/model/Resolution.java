@@ -6,6 +6,7 @@ public class Resolution implements IBaseModel {
 	
 	protected String name;
 	protected float scale;
+	protected String basedOn;
 	
 	public Resolution(String name) {
 		this.name = name;
@@ -33,6 +34,14 @@ public class Resolution implements IBaseModel {
 
 	public void setScale(float scale) {
 		this.scale = scale;
+	}
+
+	public String getBasedOn() {
+		return basedOn;
+	}
+
+	public void setBasedOn(String basedOn) {
+		this.basedOn = basedOn;
 	}
 
 }

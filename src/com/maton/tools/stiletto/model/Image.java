@@ -18,6 +18,7 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 	private BundleContext ctx;
 	private AlternatePool alternates;
 	private Resolution resolution;
+	private float scaleAliased;
 	
 	private boolean framed;
 	private float left, right, top, bottom;
@@ -28,6 +29,7 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 		loaded = false;
 		this.ctx = ctx;
 		export = true;
+		scaleAliased = 1.0f;
 
 		int lIdx = name.lastIndexOf(".");
 		exportName = name.substring(0, lIdx);
@@ -218,6 +220,7 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 
 	public void setResolution(Resolution resolution) {
 		this.resolution = resolution;
+		scaleAliased = 1;
 	}
 	
 	public float getResLeft() {
@@ -232,7 +235,7 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 			}
 		}
 		
-		return left * scale;
+		return left * scale * scaleAliased;
 	}
 
 	public float getResRight() {
@@ -247,7 +250,7 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 			}
 		}
 
-		return right * scale;
+		return right * scale * scaleAliased;
 	}
 
 	public float getResTop() {
@@ -262,7 +265,7 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 			}
 		}
 
-		return top * scale;
+		return top * scale * scaleAliased;
 	}
 
 	public float getResBottom() {
@@ -277,6 +280,14 @@ public class Image implements Drawable, IBaseModel, IImageProvider {
 			}
 		}
 
-		return bottom * scale;
+		return bottom * scale * scaleAliased;
+	}
+
+	public float getScaleAliased() {
+		return scaleAliased;
+	}
+
+	public void setScaleAliased(float scaleAliased) {
+		this.scaleAliased = scaleAliased;
 	}
 }
