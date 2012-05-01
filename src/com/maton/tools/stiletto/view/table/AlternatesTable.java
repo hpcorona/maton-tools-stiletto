@@ -56,6 +56,7 @@ public class AlternatesTable extends DefaultTable<Alternate> {
 						alt = image.getAlternates().newElement(res.getName());
 						alt.setScaleX(res.getScale());
 						alt.setScaleY(res.getScale());
+						alt.setImageName(res.getName() + "_" + image.getExportName());
 						
 						image.getAlternates().notifyChange(alt);
 					}
