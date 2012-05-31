@@ -17,6 +17,7 @@ import com.maton.tools.stiletto.view.BundleContainer;
 import com.maton.tools.stiletto.view.action.CloneSpriteAction;
 import com.maton.tools.stiletto.view.action.DeleteAction;
 import com.maton.tools.stiletto.view.action.NewSpriteAction;
+import com.maton.tools.stiletto.view.action.ScalePositionsAction;
 import com.maton.tools.stiletto.view.table.DefaultTable;
 import com.maton.tools.stiletto.view.table.SpritesTable;
 
@@ -64,6 +65,10 @@ public class SpritesOutline extends DefaultOutline {
 		toolbar.add(new Separator());
 		toolbar.add(new DeleteAction<Sprite>(parent.getShell(), BundleContainer
 				.getInstance().getCurrent().getBundle(), table));
+		toolbar.add(new Separator());
+		toolbar.add(new ScalePositionsAction(parent.getShell(), BundleContainer
+				.getInstance().getCurrent().getBundle().getSprites()));
+
 		toolbar.update(true);
 
 		return table.getTable();
